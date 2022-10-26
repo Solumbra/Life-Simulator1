@@ -1536,9 +1536,16 @@ CELEBRITY_FEMALE_WRITER = [
 ]
 
 
-# List of Urban locations (a park, a bank etc.)
+# List of Urban locations (a park, a bank etc.) called after 'to' or 'at' "we went to {urban_location}", "we spent time at {urban_location}"
+# terms like 'downtown' arent in this list. you cant write 'spent time at downtown' over 'spent time downtown', or 'went to downtown' over 'went downtown'
+# 'downtown' and other similar terms are in URBAN_DIRECTIONAL below
 
 URBAN_LOCATION = [
+	_("an abandoned building"),
+	_("an abandoned factory"),
+	_("an abandoned house"),
+	_("an abandoned office building"),
+	_("an abandoned school"),
 	_("an airport"),
 	_("an airfield"),
 	_("an alleyway"),
@@ -1564,6 +1571,7 @@ URBAN_LOCATION = [
 	_("a butcher's shop"),
 	_("a cafe"),
 	_("a canal"),
+	_("the central business district"),
 	_("a church"),
 	_("City Hall"),
 	_("a clinic"),
@@ -1631,6 +1639,7 @@ URBAN_LOCATION = [
 	_("an office building"),
 	_("an opera house"),
 	_("some outdoor seating"),
+	_("an overpass"),
 	_("a park"),
 	_("a patisserie"),
 	_("some pedestrian infrastructure"),
@@ -1651,6 +1660,8 @@ URBAN_LOCATION = [
 	_("a public square"),
 	_("a public toilet"),
 	_("a radio station"),
+	_("a railway line"),
+	_("a railway station"),
 	_("a recreation centre"),
 	_("a recreation facility"),
 	_("some remarkable architecture"),
@@ -1679,21 +1690,104 @@ URBAN_LOCATION = [
 	_("a strip of shops"),
 	_("a subway station"),
 	_("a swimming pool"),
+	_("a synagogue"),
 	_("a taxi stand"),
 	_("a technology centre"),
 	_("some tech infrastructure"),
 	_("a television station"),
 	_("a tennis court"),
-	
 	_("a temple"),
-	_("a synagogue"),
+	_("a temple complex"),
+	_("a theme park"),
+	_("a tower"),
+	_("a traffic light"),
+	_("some traffic lights"),
+	_("a train line"),
+	_("a train station"),
+	_("a tree"),
+	_("some trees"),
+	_("the underground"),
+	_("an underpass"),
+	_("a university"),
+	_("an urban farm"),
+	_("an urban forest"),
+	_("a vending machine"),
+	_("some vending machines"),
+	_("a vertical park"),
+	_("a visitor centre"),
+	_("a void deck"),
+	_("a water pipe"),
+	_("some water pipes"),
+	_("a water tower"),
+	_("a waterfront"),
+	_("the waterfront"),
+	_("a waterfront tower"),
 	_(""),
+	_(""),
+]
+
+# List of urban story building directional movement terms.
+# E.g. for 'we went {downtown} to {an urban forest}', or 'we spent time {across town} at {a void deck}
+
+URBAN_DIRECTIONAL = [
+	_("across the river"),
+	_("across town"),
+	_("downtown"),
+	_("down the road"),
+	_("over the road"),
+	_("up the road"),
+	_("up the street"),
+	_(""),
+]
+
+# List of past tense urban movement terms
+# Use for 'We {took the train} {downtown} to {an urban forest}
+
+URBAN_MOVEMENT = [
+	_("jogged"),
+	_("ran"),
+	_("took the train"),
+	_("walked"),
+	_("went jogging"),
+]
+
+# List of rural locations
+
+RURAL_LOCATION = [
+	_("a barn"),
+	_("a country lane"),
+	_("a farm"),
+	_("a field"),
+	_("a fish farm"),
+	_("a paddock"),
+	_("a hay shed"),
+	_("a windmill"),
 ]
 
 # List of Natural locations (a mountain, a forest etc.)
 
 NATURAL_LOCATION = [
-
+	_("a beach"),
+	_("the beach"),
+	_("a canyon"),
+	_("the canyon"),
+	_("a gorge"),
+	_("the gorge"),
+	_("a mountain"),
+	_("the mountains"),
+	_("a forest"),
+	_("the forest"),
+	_("a lake"),
+	_("the lake"),
+	_("the mouth of the river"),
+	_("a ravine"),
+	_("the ravine"),
+	_("a river"),
+	_("the river"),
+	_("a river delta"),
+	_("the river delta"),
+	_("a stream"),
+	_("a "),
 ]
 
 # List of Environmental locations. E.g. 'You practiced writing a story, you chose comic sans and began with "It was {a dark and stormy night}', or "You {beat the meat} while thinking of {margaret thatcher} on {a hot sunny day}"
