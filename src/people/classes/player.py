@@ -783,7 +783,7 @@ class Player(Person):
 		if self.salary > 0:
 			money = self.salary * self.job_hours / 40
 			tax = calculate_tax(money)
-			income = self.salary - tax
+			income = money - tax
 			income *= random.uniform(0.4, 0.8)  # Expenses
 			self.money += round_stochastic(income)
 		if self.uv_years > 0:
