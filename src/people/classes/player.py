@@ -74,6 +74,7 @@ class Player(Person):
 		self.salary = 0
 		self.years_worked = 0
 		self.has_job = False
+		self.job_title = None
 		self.lottery_jackpot = 0
 		self.stress = 0
 		self.performance = 0
@@ -640,10 +641,11 @@ class Player(Person):
 					self.change_health(-randint(4, 8))
 					self.add_illness(TranslateMarker("High Blood Pressure"))
 
-	def get_job(self, salary):
+	def get_job(self, salary, title=None):
 		if not self.has_job:
 			self.has_job = True
 			self.salary = salary
+			self.job_title = title
 			self.years_worked = 0
 			self.stress = 45
 			self.performance = 50
@@ -656,12 +658,12 @@ class Player(Person):
 		if self.has_job:
 			self.has_job = False
 			self.salary = 0
+			self.job_title = None
 			self.years_worked = 0
 			self.stress = 0
 			self.performance = 0
 			self.job_hours = 0
 			self.salary_years = []
-
 	def change_stress(self, amount):
 		if self.has_job:
 			self.stress = clamp(self.stress + amount, 0, 100)

@@ -17,7 +17,13 @@ class Relationship(Person):
         self.had_conversation = False
         self.was_complimented = False
 
-    # TODO: add is_male() and is_female() methods
+    def is_male(self):
+        """Return True if this relation is male."""
+        return self.gender == Gender.Male
+
+    def is_female(self):
+        """Return True if this relation is female."""
+        return self.gender == Gender.Female
 
     def change_relationship(self, amount):
         self.relationship = clamp(self.relationship + amount, 0, 100)
