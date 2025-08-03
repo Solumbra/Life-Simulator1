@@ -760,6 +760,34 @@ class Player(Person):
 		self.job_hours = hours
 		self.change_stress(round((self.job_hours - prev) * 0.75))
 
+	def calculate_yearly_income(self, factor=None):
+		"""Compute the amount of money earned from work this year.
+
+		The calculation takes the player's salary, adjusts it based on the
+		number of hours worked, subtracts taxes and finally applies a
+		random expense factor.  The result is rounded stochastically to
+		better simulate real world rounding.
+
+		Parameters
+		----------
+		factor: float, optional
+			Expense factor to apply to the post-tax salary.  If not
+			provided a random value between 0.4 and 0.8 will be
+			generated.
+
+		Returns
+		-------
+		int
+			The final rounded income for the year.
+		"""
+		money = self.salary * self.job_hours / 40
+		tax = calculate_tax(money)
+		income = money - tax
+		if factor is None:
+			factor = random.uniform(0.4, 0.8)
+		income *= factor
+		return round_stochastic(income)
+
 	def random_events(self):
 		if self.age >= 5 and one_in(5000):
 			print(_("You were struck by lightning!"))
@@ -781,11 +809,7 @@ class Player(Person):
 		if self.has_job:
 			self.years_worked += 1
 		if self.salary > 0:
-			money = self.salary * self.job_hours / 40
-			tax = calculate_tax(money)
-			income = money - tax
-			income *= random.uniform(0.4, 0.8)  # Expenses
-			self.money += round_stochastic(income)
+			self.money += self.calculate_yearly_income()
 		if self.uv_years > 0:
 			self.uv_years -= 1
 			if self.uv_years == 0:
