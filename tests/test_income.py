@@ -15,7 +15,7 @@ partner_stub.Partner = _DummyPartner
 sys.modules['src.people.classes.partner'] = partner_stub
 
 from src.people.classes.player import Player
-from src.lifesim_lib.lifesim_lib import Gender, calculate_tax, round_stochastic
+from src.lifesim_lib.lifesim_lib import Gender
 
 
 def test_player_income_respects_hours_and_tax():
@@ -32,10 +32,5 @@ def test_player_income_respects_hours_and_tax():
     p.random_events()
 
     random.seed(2)
-    factor = random.uniform(0.4, 0.8)
-    money = p.salary * p.job_hours / 40
-    tax = calculate_tax(money)
-    income = money - tax
-    income *= factor
-    expected = round_stochastic(income)
+    expected = p.calculate_yearly_income()
     assert p.money == expected
