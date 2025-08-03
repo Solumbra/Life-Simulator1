@@ -124,7 +124,7 @@ class Child(Relationship):
             tax = calculate_tax(self.salary)
             income = self.salary - tax
             income *= random.uniform(0.4, 0.8)
-            self.money += round_stochastic(self.salary)
+            self.money += round_stochastic(income)
         can_get_job = self.salary == 0 and self.age >= 18 and self.is_in_uv == 0
         if can_get_job and randint(1, 3) == 1:
             attempts = randint(2, 7)
