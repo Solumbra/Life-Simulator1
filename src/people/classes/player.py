@@ -90,6 +90,12 @@ class Player(Person):
 		self.illnesses = []
 		self.salary_years = []
 		self.children = []
+		self.skills = {"academic": 0, "athletic": 0, "social": 0, "leadership": 0}
+		self.college_prep = 0
+		self.club = False
+		self.sports_team = False
+		self.student_council = False
+		self.part_time_job = False
 		self.ID = str(uuid.uuid4())
 		self.fertility = 0
 		if self.gender == Gender.Female:
@@ -361,7 +367,22 @@ class Player(Person):
 			os.remove(self.save_path)
 
 	def is_in_school(self):
-		return self.grades is not None
+                return self.grades is not None
+
+	def get_school_stage(self):
+                if self.uv_years > 0:
+                        return "university"
+                if not self.is_in_school():
+                        return None
+                if self.age < 12:
+                        return "primary"
+                if self.age < 14:
+                        return "middle"
+                return "high"
+
+	def change_skill(self, skill, amount):
+		if skill in self.skills:
+			self.skills[skill] = clamp(self.skills[skill] + amount, 0, 100)
 
 	def add_illness(self, illness):
 		if illness not in self.illnesses:
@@ -985,6 +1006,9 @@ class Player(Person):
 			if grade_delta > 0:
 				grade_delta /= 2
 			self.change_grades(round_stochastic(grade_delta))
+		if self.part_time_job and self.is_in_school():
+			self.change_grades(-randint(1, 3))
+			self.money += randint(500, 1500)
 		if self.has_trait("GENIUS"):
 			if self.age < randint(18, 25):
 				self.change_smarts(randint(0, 9))
@@ -1166,6 +1190,12 @@ class Player(Person):
 			print(_("You graduated from high school."))
 			self.change_happiness(randint(15, 20))
 			self.change_smarts(randint(6, 10))
+			if self.student_council:
+				print(_("Your student council service stands out on applications."))
+				self.change_skill("leadership", randint(1, 3))
+			if self.college_prep >= 50:
+				print(_("Your college prep scores earned you scholarship offers."))
+				self.money += randint(500, 2000)
 			print()
 			self.display_stats()
 			print()
