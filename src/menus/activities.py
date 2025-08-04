@@ -14,12 +14,15 @@ def activities_menu(player):
                 choices = [_("Back")]
                 if 3 <= player.age < 13:
                         choices.append(_("Play with your toys"))
+                if 3 <= player.age < 7:
+                        choices.append(_("Storytime"))
+                        choices.append(_("Music Time"))
+                if player.age >= 3:
+                        choices.append(_("Arts and Crafts"))
                 if player.age >= 4:
                         choices.append(_("Doctor"))
                         if player.age >= 18:
                                 choices.append(_("Witch Doctor"))
-                if player.age >= 5:
-                        choices.append(_("Arts and Crafts"))
                 if player.age >= 6:
                         choices.append(_("Mind & Body"))
                 if player.age >= 12:
@@ -69,6 +72,10 @@ def activities_menu(player):
                                                         _("You played with your pop-up toys."),
                                                         _("You played with your puzzle with knobs."),
                                                         _("You played with your blocks."),
+                                                        _("You stacked blocks into a tall tower and watched it tumble."),
+                                                        _("You molded animals out of clay."),
+                                                        _("You banged on a toy drum and made up a rhythm."),
+                                                        _("You explored the garden and collected leaves and rocks."),
                                                         _("You played in your sandbox."),
                                                         _("You played with your sandbox toys."),
                                                         _("You played in your wading pool."),
@@ -115,6 +122,11 @@ def activities_menu(player):
                                                         _("You played with your pop-up toys."),
                                                         _("You played with your puzzle with knobs."),
                                                         _("You played with your blocks."),
+                                                        _("You built a castle out of blocks."),
+                                                        _("You sculpted animals out of clay."),
+                                                        _("You went on a bug hunt in the backyard."),
+                                                        _("You played a tune on a toy xylophone."),
+                                                        _("You walked through the park collecting leaves."),
                                                         _("You played in your sandbox."),
                                                         _("You played with your sandbox toys."),
                                                         _("You played in your wading pool."),
@@ -294,6 +306,32 @@ def activities_menu(player):
                         if not player.played:
                                 player.played = True
                                 player.change_happiness(happy_gain)
+                elif choice == _("Storytime"):
+                        selected = True
+                        sayings = [
+                                _("Your parent read aloud a picture book and asked you questions about it."),
+                                _("You looked at the pictures and told the story back in your own words."),
+                                _("You created a simple storybook with drawings."),
+                                _("You made up a story about animals you saw outside."),
+                        ]
+                        print(random.choice(sayings))
+                        if not player.did_storytime:
+                                player.change_happiness(randint(2, 5))
+                                player.change_smarts(randint(1, 2))
+                                player.did_storytime = True
+                elif choice == _("Music Time"):
+                        selected = True
+                        sayings = [
+                                _("You shook a tambourine and sang a song."),
+                                _("You banged on a small drum and explored rhythm."),
+                                _("You danced around while playing a toy xylophone."),
+                                _("You clapped to the beat of a song with your family."),
+                        ]
+                        print(random.choice(sayings))
+                        if not player.listened_to_music:
+                                player.change_happiness(randint(2, 5))
+                                player.change_smarts(randint(0, 1))
+                                player.listened_to_music = True
                 elif choice == _("Arts and Crafts"):
                         selected = True
                         if player.age >= randint(5, 10) and one_in(10):
@@ -320,6 +358,8 @@ def activities_menu(player):
                                                 _("You drew in your colouring book"),
                                                 _("You squished clay between your fingers."),
                                                 _("You drew with your large crayons."),
+                                                _("You mixed colours together with your fingers."),
+                                                _("You glued leaves onto paper to feel their textures."),
                                         ]
                                 elif player.age < 6:
                                         sayings = [
@@ -332,6 +372,8 @@ def activities_menu(player):
                                                         "You drew a house that looked like a triangle on top of a square."
                                                 ),
                                                 _("You drew a stick figure picture of your family."),
+                                                _("You mixed different paints to see what colours you could make."),
+                                                _("You glued fabric and paper together to explore textures."),
                                         ]
                                 elif player.age < 10:
                                         sayings = [
