@@ -496,6 +496,9 @@ class Player(Person):
 		self.worked_harder = False
 		self.listened_to_music = False
 		self.did_storytime = False
+		self.did_socialization = False
+		self.did_everyday_learning = False
+		self.did_experiment = False
 		self.asked_for_raise = False
 		self.skipped_school = False
 		w = abs(gauss(0, 16))
