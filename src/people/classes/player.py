@@ -91,6 +91,7 @@ class Player(Person):
 		self.salary_years = []
 		self.children = []
 		self.skills = {"academic": 0, "athletic": 0, "social": 0, "leadership": 0}
+		self.school_reputation = 50
 		self.college_prep = 0
 		self.club = False
 		self.sports_team = False
@@ -367,18 +368,18 @@ class Player(Person):
 			os.remove(self.save_path)
 
 	def is_in_school(self):
-                return self.grades is not None
+		return self.grades is not None
 
 	def get_school_stage(self):
-                if self.uv_years > 0:
-                        return "university"
-                if not self.is_in_school():
-                        return None
-                if self.age < 12:
-                        return "primary"
-                if self.age < 14:
-                        return "middle"
-                return "high"
+		if self.uv_years > 0:
+			return "university"
+		if not self.is_in_school():
+			return None
+		if self.age < 12:
+			return "primary"
+		if self.age < 14:
+			return "middle"
+		return "high"
 
 	def change_skill(self, skill, amount):
 		if skill in self.skills:
@@ -398,6 +399,9 @@ class Player(Person):
 
 	def change_karma(self, amount):
 		self.karma = clamp(self.karma + amount, 0, 100)
+
+	def change_school_reputation(self, amount):
+		self.school_reputation = clamp(self.school_reputation + amount, 0, 100)
 
 	def get_traits_str(self):
 		return ", ".join(
@@ -882,8 +886,135 @@ class Player(Person):
 		"""
 		return max(1, round(base / self.get_difficulty()))
 
+	def exam_mini_game(self):
+		a = randint(1, 12)
+		b = randint(1, 12)
+		print(_("Exam time! What is {a} + {b}?" ).format(a=a, b=b))
+		try:
+			ans = int(input("> "))
+		except ValueError:
+			ans = None
+		if ans == a + b:
+			print(_("You passed the exam."))
+			self.change_grades(randint(2, 4))
+			self.change_happiness(randint(1, 3))
+			return True
+		else:
+			print(_("You failed the exam."))
+			self.change_grades(-randint(2, 4))
+			self.change_happiness(-randint(1, 3))
+			return False
+
+	def school_random_events(self, forced_event=None):
+		stage = self.get_school_stage()
+		if not stage:
+			return
+		if forced_event is None:
+			if not one_in(self.get_event_chance(6)):
+				return
+			event = random.choice(
+				[
+					"class_trip",
+					"science_fair",
+					"teacher_strike",
+					"school_competition",
+					"cheat_test",
+					"report_cheating",
+					"help_teacher",
+				]
+			)
+		else:
+			event = forced_event
+
+		if event == "class_trip":
+			cost = randint(50, 200)
+			print(
+				_(
+					"Your class is going on a trip that costs ${cost}. Do you want to go?"
+				).format(cost=cost)
+			)
+			choice = choice_input(_("Join the trip"), _("Stay home"))
+			if choice == 1:
+				if self.money >= cost:
+					self.money -= cost
+					self.change_happiness(randint(3, 6))
+					self.change_school_reputation(randint(1, 3))
+				else:
+					print(_("You can't afford to go."))
+		elif event == "science_fair":
+			print(_("Your school is hosting a science fair. Do you want to enter?"))
+			choice = choice_input(_("Enter"), _("Skip"))
+			if choice == 1:
+				success = self.smarts + randint(-20, 20) > 60
+				if success:
+					print(_("Your project was a hit!"))
+					self.change_smarts(randint(1, 3))
+					self.change_school_reputation(randint(2, 5))
+				else:
+					print(_("Your project failed to impress."))
+					self.change_happiness(-randint(1, 3))
+		elif event == "teacher_strike":
+			print(_("Teachers are on strike. School is closed for a week."))
+			self.change_happiness(randint(1, 3))
+			self.change_grades(-randint(1, 3))
+		elif event == "school_competition":
+			comp = random.choice(["sports", "quiz"])
+			print(
+				_(
+					"Your school is holding a {comp} competition. Do you take part?"
+				).format(comp=comp)
+			)
+			choice = choice_input(_("Participate"), _("Skip"))
+			if choice == 1:
+				skill = "athletic" if comp == "sports" else "academic"
+				success = self.skills[skill] + randint(0, 50) > 60
+				if success:
+					print(_("You won the competition!"))
+					self.change_school_reputation(randint(2, 5))
+					self.change_happiness(randint(2, 5))
+					self.change_skill(skill, randint(1, 3))
+				else:
+					print(_("You lost the competition."))
+					self.change_happiness(-randint(1, 3))
+		elif event == "cheat_test":
+			print(_("You have an important test coming up. Do you cheat?"))
+			choice = choice_input(_("Cheat"), _("Take test honestly"))
+			if choice == 1:
+				if one_in(3):
+					print(_("You were caught cheating!"))
+					self.change_grades(-randint(5, 10))
+					self.change_school_reputation(-randint(5, 10))
+					self.change_karma(-randint(5, 10))
+				else:
+					print(_("You cheated and got away with it."))
+					self.change_grades(randint(1, 3))
+					self.change_school_reputation(-randint(1, 3))
+					self.change_karma(-randint(2, 4))
+			else:
+				self.exam_mini_game()
+		elif event == "report_cheating":
+			print(_("You notice a classmate cheating on an exam. What do you do?"))
+			choice = choice_input(
+				_("Report to the teacher"), _("Ignore it")
+			)
+			if choice == 1:
+				self.change_school_reputation(randint(2, 5))
+				self.change_karma(randint(2, 5))
+			else:
+				print(_("You decided not to get involved."))
+		elif event == "help_teacher":
+			print(_("A teacher asks you to help organize supplies after class."))
+			choice = choice_input(_("Help"), _("Decline"))
+			if choice == 1:
+				self.change_school_reputation(randint(2, 4))
+				self.change_happiness(randint(1, 3))
+				self.change_skill("leadership", randint(1, 2))
+			else:
+				self.change_school_reputation(-randint(1, 3))
 
 	def random_events(self):
+		if self.is_in_school():
+			self.school_random_events()
 		if self.age >= 5 and one_in(self.get_event_chance(5000)):
 			print(_("You were struck by lightning!"))
 			good_or_bad = one_in(2)
