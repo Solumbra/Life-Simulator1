@@ -26,6 +26,12 @@ SPORT_OPTIONS = [
         ("Soccer", {"athletic": 15, "stamina": 10}),
         ("Basketball", {"athletic": 20, "strength": 10}),
         ("Swimming", {"athletic": 18, "stamina": 15}),
+        ("Football", {"athletic": 25, "strength": 15}),
+        ("Baseball", {"athletic": 15, "strength": 10}),
+        ("Tennis", {"athletic": 18, "stamina": 12}),
+        ("Volleyball", {"athletic": 17, "strength": 12}),
+        ("Track and Field", {"athletic": 22, "stamina": 18}),
+        ("Cheerleading", {"athletic": 16, "charisma": 12}),
 ]
 
 PROJECT_OPTIONS = [
@@ -540,33 +546,51 @@ def main_menu(player):
 		display_data(_("Rivals"), player.rivalries)
 		display_data(_("Romantic interests"), player.romantic_interests)
 		stage = player.get_school_stage()
-		base_options = [
-			_("Back"),
-			_("Study harder"),
-			_("Drop out"),
-			_("Skip school"),
-			_("Hang out"),
-			_("Study together"),
-			_("Gossip"),
-		]
-		if stage != "primary":
-			base_options.append(_("Attend party"))
-		if stage == "primary":
-			extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
-		elif stage == "middle":
-			extra = [_("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
-		elif stage == "high":
-			extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
-		else:
-			extra = []
-		choice = choice_input(*(base_options + extra))
-		clear_screen()
-		if choice == 2:
-			print(_("You began studying harder"))
-			if player.energy < 10:
-				print(_("You're too tired to study."))
-			elif not player.studied:
-				player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
+                base_options = [
+                        _("Back"),
+                        _("Study harder"),
+                        _("Drop out"),
+                        _("Skip school"),
+                        _("Hang out"),
+                        _("Study together"),
+                        _("Gossip"),
+                ]
+                if stage != "primary":
+                        base_options.append(_("Attend party"))
+                train_idx = None
+                if player.sports_team:
+                        base_options.append(_("Train sport"))
+                        train_idx = len(base_options)
+                if stage == "primary":
+                        extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
+                elif stage == "middle":
+                        extra = [_("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
+                elif stage == "high":
+                        extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
+                else:
+                        extra = []
+                choice = choice_input(*(base_options + extra))
+                clear_screen()
+                if train_idx and choice == train_idx:
+                        if player.energy < 10:
+                                print(_("You're too tired to train."))
+                        else:
+                                print(
+                                        _("You trained with the {sport} team.").format(
+                                                sport=player.sports_team_name.lower()
+                                        )
+                                )
+                                gain = randint(1, 3)
+                                player.change_skill("athletic", gain)
+                                player.change_health(randint(1, 3))
+                                player.change_happiness(randint(1, 3))
+                                player.change_energy(-10)
+                elif choice == 2:
+                        print(_("You began studying harder"))
+                        if player.energy < 10:
+                                print(_("You're too tired to study."))
+                        elif not player.studied:
+                                player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
 				player.change_smarts(randint(0, 2) + (player.has_trait("NERD")))
 				player.change_knowledge(randint(5, 10))
 				player.change_energy(-10)
@@ -732,12 +756,12 @@ def main_menu(player):
 				player.change_stress(randint(1, 4))
 				player.change_school_reputation(-randint(1, 3))
 				player.change_energy(-3)
-		elif choice == 8 and _("Attend party") in base_options:
-			if player.energy < 15:
-				print(_("You're too tired to party."))
-			else:
-				print(_("You attended a party."))
-				player.change_happiness(randint(4, 8))
+                elif choice == 8 and _("Attend party") in base_options:
+                        if player.energy < 15:
+                                print(_("You're too tired to party."))
+                        else:
+                                print(_("You attended a party."))
+                                player.change_happiness(randint(4, 8))
 				player.change_popularity(randint(3, 6))
 				player.change_stress(randint(0, 5))
 				player.change_grades(-randint(1, 3))
@@ -752,20 +776,24 @@ def main_menu(player):
 				if idx == 1:
 					if player.energy < 5:
 						print(_("You're too tired."))
-					elif not player.club:
-						club_names = [_(c[0]) for c in CLUB_OPTIONS]
-						cchoice = choice_input(*club_names)
-						cname, reqs, reward = CLUB_OPTIONS[cchoice - 1]
-						meets = all(
-							player.skills.get(skill, 0) >= val
-							for skill, val in reqs.items()
-						)
-						if meets:
-							print(
-								_("You joined the {club}.").format(
-									club=cname.lower()
-								)
-							)
+                                        elif not player.club:
+                                                club_names = [_(c[0]) for c in CLUB_OPTIONS]
+                                                cchoice = choice_input(*club_names)
+                                                cname, reqs, reward = CLUB_OPTIONS[cchoice - 1]
+                                                print(_("Requirements for {club}:").format(club=cname))
+                                                for skill, val in reqs.items():
+                                                        pval = player.skills.get(skill, 0)
+                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
+                                                meets = all(
+                                                        player.skills.get(skill, 0) >= val
+                                                        for skill, val in reqs.items()
+                                                )
+                                                if meets:
+                                                        print(
+                                                                _("You joined the {club}.").format(
+                                                                        club=cname.lower()
+                                                                )
+                                                        )
 							player.change_happiness(randint(5, 10))
 							player.change_skill(reward, randint(1, 3))
 							player.change_energy(-5)
@@ -855,21 +883,25 @@ def main_menu(player):
 				elif idx == 5:
 					if player.energy < 10:
 						print(_("You're too tired for sports."))
-					elif not player.sports_team:
-						sport_names = [_(s[0]) for s in SPORT_OPTIONS]
-						schoice = choice_input(*sport_names)
-						sname, reqs = SPORT_OPTIONS[schoice - 1]
-						meets = True
-						if stage != "primary":
-							meets = all(
-								player.skills.get(skill, 0) >= val
-								for skill, val in reqs.items()
-							)
-						if meets:
-							print(
-								_("You joined the {sport} team.").format(
-									sport=sname.lower()
-								)
+                                        elif not player.sports_team:
+                                                sport_names = [_(s[0]) for s in SPORT_OPTIONS]
+                                                schoice = choice_input(*sport_names)
+                                                sname, reqs = SPORT_OPTIONS[schoice - 1]
+                                                print(_("Requirements for {sport} team:").format(sport=sname))
+                                                for skill, val in reqs.items():
+                                                        pval = player.skills.get(skill, 0)
+                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
+                                                meets = True
+                                                if stage != "primary":
+                                                        meets = all(
+                                                                player.skills.get(skill, 0) >= val
+                                                                for skill, val in reqs.items()
+                                                        )
+                                                if meets:
+                                                        print(
+                                                                _("You joined the {sport} team.").format(
+                                                                        sport=sname.lower()
+                                                                )
 							)
 							player.sports_team = True
 							player.sports_team_name = sname
@@ -900,19 +932,23 @@ def main_menu(player):
 				elif idx == 2:
 					if player.energy < 10:
 						print(_("You're too tired for sports."))
-					elif not player.sports_team:
-						sport_names = [_(s[0]) for s in SPORT_OPTIONS]
-						schoice = choice_input(*sport_names)
-						sname, reqs = SPORT_OPTIONS[schoice - 1]
-						meets = all(
-							player.skills.get(skill, 0) >= val
-							for skill, val in reqs.items()
-						)
-						if meets:
-							print(
-								_("You joined the {sport} team.").format(
-									sport=sname.lower()
-								)
+                                        elif not player.sports_team:
+                                                sport_names = [_(s[0]) for s in SPORT_OPTIONS]
+                                                schoice = choice_input(*sport_names)
+                                                sname, reqs = SPORT_OPTIONS[schoice - 1]
+                                                print(_("Requirements for {sport} team:").format(sport=sname))
+                                                for skill, val in reqs.items():
+                                                        pval = player.skills.get(skill, 0)
+                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
+                                                meets = all(
+                                                        player.skills.get(skill, 0) >= val
+                                                        for skill, val in reqs.items()
+                                                )
+                                                if meets:
+                                                        print(
+                                                                _("You joined the {sport} team.").format(
+                                                                        sport=sname.lower()
+                                                                )
 							)
 							player.sports_team = True
 							player.sports_team_name = sname
