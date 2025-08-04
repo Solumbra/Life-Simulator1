@@ -15,29 +15,29 @@ from src.menus.activities import activities_menu
 # Available school clubs and sports teams with optional skill requirements
 # Each entry is (name, {skill: minimum_value}, skill_reward)
 CLUB_OPTIONS = [
-        ("Science Club", {"science": 20}, "academic"),
-        ("Art Club", {"creativity": 20}, "social"),
-        ("Drama Club", {"charisma": 20}, "social"),
-        ("Math Club", {"math": 20}, "academic"),
-        ("Literature Club", {"language": 20}, "academic"),
+	("Science Club", {"science": 20}, "academic"),
+	("Art Club", {"creativity": 20}, "social"),
+	("Drama Club", {"charisma": 20}, "social"),
+	("Math Club", {"math": 20}, "academic"),
+	("Literature Club", {"language": 20}, "academic"),
 ]
 
 SPORT_OPTIONS = [
-        ("Soccer", {"athletic": 15, "stamina": 10}),
-        ("Basketball", {"athletic": 20, "strength": 10}),
-        ("Swimming", {"athletic": 18, "stamina": 15}),
-        ("Football", {"athletic": 25, "strength": 15}),
-        ("Baseball", {"athletic": 15, "strength": 10}),
-        ("Tennis", {"athletic": 18, "stamina": 12}),
-        ("Volleyball", {"athletic": 17, "strength": 12}),
-        ("Track and Field", {"athletic": 22, "stamina": 18}),
-        ("Cheerleading", {"athletic": 16, "charisma": 12}),
+	("Soccer", {"athletic": 15, "stamina": 10}),
+	("Basketball", {"athletic": 20, "strength": 10}),
+	("Swimming", {"athletic": 18, "stamina": 15}),
+	("Football", {"athletic": 25, "strength": 15}),
+	("Baseball", {"athletic": 15, "strength": 10}),
+	("Tennis", {"athletic": 18, "stamina": 12}),
+	("Volleyball", {"athletic": 17, "strength": 12}),
+	("Track and Field", {"athletic": 22, "stamina": 18}),
+	("Cheerleading", {"athletic": 16, "charisma": 12}),
 ]
 
 PROJECT_OPTIONS = [
-        ("science fair project", "You built a baking soda volcano.", "science"),
-        ("art project", "You created a colorful painting.", "creativity"),
-        ("history presentation", "You presented about ancient Rome.", "language"),
+	("science fair project", "You built a baking soda volcano.", "science"),
+	("art project", "You created a colorful painting.", "creativity"),
+	("history presentation", "You presented about ancient Rome.", "language"),
 ]
 
 # Middle school career aspirations which influence high-school options
@@ -45,23 +45,23 @@ CAREER_OPTIONS = ["Science", "Arts", "Sports", "Business"]
 
 # Mapping of career aspirations to specialized high-school courses
 ADVANCED_COURSES = {
-        "Science": ("advanced science program", "science"),
-        "Arts": ("advanced arts program", "creativity"),
-        "Sports": ("elite athletic training", "athletic"),
-        "Business": ("advanced business program", "language"),
+	"Science": ("advanced science program", "science"),
+	"Arts": ("advanced arts program", "creativity"),
+	"Sports": ("elite athletic training", "athletic"),
+	"Business": ("advanced business program", "language"),
 }
 
 # Tasks that parents or teachers may request from the player
 PARENT_TASKS = [
-        (_("study extra"), lambda p: (p.change_grades(randint(1, 3)), p.change_energy(-5))),
-        (_("do chores"), lambda p: p.change_happiness(-randint(1, 3))),
-        (_("improve your behavior"), lambda p: p.change_karma(randint(1, 3))),
+	(_("study extra"), lambda p: (p.change_grades(randint(1, 3)), p.change_energy(-5))),
+	(_("do chores"), lambda p: p.change_happiness(-randint(1, 3))),
+	(_("improve your behavior"), lambda p: p.change_karma(randint(1, 3))),
 ]
 
 TEACHER_TASKS = [
-        (_("complete an extra credit assignment"), lambda p: (p.change_grades(randint(1, 3)), p.change_knowledge(randint(1, 3)))),
-        (_("stay after class to help"), lambda p: (p.change_happiness(-randint(1, 2)), p.change_school_reputation(randint(1, 3)))),
-        (_("behave better in class"), lambda p: p.change_school_reputation(randint(1, 3))),
+	(_("complete an extra credit assignment"), lambda p: (p.change_grades(randint(1, 3)), p.change_knowledge(randint(1, 3)))),
+	(_("stay after class to help"), lambda p: (p.change_happiness(-randint(1, 2)), p.change_school_reputation(randint(1, 3)))),
+	(_("behave better in class"), lambda p: p.change_school_reputation(randint(1, 3))),
 ]
 
 def main_menu(player):
@@ -564,85 +564,85 @@ def main_menu(player):
 		print(_("School Menu"))
 		print()
 		display_bar(_("Grades"), player.grades)
-                display_bar(_("Knowledge"), player.knowledge)
-                display_bar(_("Popularity"), player.popularity)
-                display_bar(_("Parent Approval"), player.parent_approval)
-                display_bar(_("Teacher Favor"), player.teacher_favor)
-                display_data(_("Friends"), player.friendships)
-                display_data(_("Rivals"), player.rivalries)
-                display_data(_("Romantic interests"), player.romantic_interests)
-                stage = player.get_school_stage()
-                base_options = [
-                        _("Back"),
-                        _("Study harder"),
-                        _("Drop out"),
-                        _("Skip school"),
-                        _("Hang out"),
-                        _("Study together"),
-                        _("Gossip"),
-                ]
-                base_options.append(_("Parent meeting"))
-                parent_meeting_idx = len(base_options)
-                base_options.append(_("Meet teacher"))
-                teacher_meeting_idx = len(base_options)
-                attend_party_idx = None
-                if stage != "primary":
-                        base_options.append(_("Attend party"))
-                        attend_party_idx = len(base_options)
-                train_idx = None
-                if player.sports_team:
-                        base_options.append(_("Train sport"))
-                        train_idx = len(base_options)
-                if stage == "primary":
-                        extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
-                elif stage == "middle":
-                        extra = [_("Set career aspiration"), _("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
-                elif stage == "high":
-                        extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
-                else:
-                        extra = []
-                base_len = len(base_options)
-                choice = choice_input(*(base_options + extra))
-                clear_screen()
-                if train_idx and choice == train_idx:
-                        if player.energy < 10:
-                                print(_("You're too tired to train."))
-                        else:
-                                print(
-                                        _("You trained with the {sport} team.").format(
-                                                sport=player.sports_team_name.lower()
-                                        )
-                                )
-                                gain = randint(1, 3)
-                                player.change_skill("athletic", gain)
-                                player.change_health(randint(1, 3))
-                                player.change_happiness(randint(1, 3))
-                                player.change_energy(-10)
-                elif attend_party_idx and choice == attend_party_idx:
-                        if player.energy < 15:
-                                print(_("You're too tired to party."))
-                        else:
-                                print(_("You attended a party."))
-                                player.change_happiness(randint(4, 8))
-                                player.change_popularity(randint(3, 6))
-                                player.change_stress(randint(0, 5))
-                                player.change_grades(-randint(1, 3))
-                                player.change_energy(-15)
-                                if one_in(3):
-                                        player.romantic_interests += 1
-                                for parent in player.parents.values():
-                                        parent.change_relationship(-randint(1, 4))
-                elif choice == 2:
-                        print(_("You began studying harder"))
-                        if player.energy < 10:
-                                print(_("You're too tired to study."))
-                        elif not player.studied:
-                                player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
+		display_bar(_("Knowledge"), player.knowledge)
+		display_bar(_("Popularity"), player.popularity)
+		display_bar(_("Parent Approval"), player.parent_approval)
+		display_bar(_("Teacher Favor"), player.teacher_favor)
+		display_data(_("Friends"), player.friendships)
+		display_data(_("Rivals"), player.rivalries)
+		display_data(_("Romantic interests"), player.romantic_interests)
+		stage = player.get_school_stage()
+		base_options = [
+			_("Back"),
+			_("Study harder"),
+			_("Drop out"),
+			_("Skip school"),
+			_("Hang out"),
+			_("Study together"),
+			_("Gossip"),
+		]
+		base_options.append(_("Parent meeting"))
+		parent_meeting_idx = len(base_options)
+		base_options.append(_("Meet teacher"))
+		teacher_meeting_idx = len(base_options)
+		attend_party_idx = None
+		if stage != "primary":
+			base_options.append(_("Attend party"))
+			attend_party_idx = len(base_options)
+		train_idx = None
+		if player.sports_team:
+			base_options.append(_("Train sport"))
+			train_idx = len(base_options)
+		if stage == "primary":
+			extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
+		elif stage == "middle":
+			extra = [_("Set career aspiration"), _("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
+		elif stage == "high":
+			extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
+		else:
+			extra = []
+		base_len = len(base_options)
+		choice = choice_input(*(base_options + extra))
+		clear_screen()
+		if train_idx and choice == train_idx:
+			if player.energy < 10:
+				print(_("You're too tired to train."))
+			else:
+				print(
+					_("You trained with the {sport} team.").format(
+						sport=player.sports_team_name.lower()
+					)
+				)
+				gain = randint(1, 3)
+				player.change_skill("athletic", gain)
+				player.change_health(randint(1, 3))
+				player.change_happiness(randint(1, 3))
+				player.change_energy(-10)
+		elif attend_party_idx and choice == attend_party_idx:
+			if player.energy < 15:
+				print(_("You're too tired to party."))
+			else:
+				print(_("You attended a party."))
+				player.change_happiness(randint(4, 8))
+				player.change_popularity(randint(3, 6))
+				player.change_stress(randint(0, 5))
+				player.change_grades(-randint(1, 3))
+				player.change_energy(-15)
+				if one_in(3):
+					player.romantic_interests += 1
+				for parent in player.parents.values():
+					parent.change_relationship(-randint(1, 4))
+		elif choice == 2:
+			print(_("You began studying harder"))
+			if player.energy < 10:
+				print(_("You're too tired to study."))
+			elif not player.studied:
+				player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
 				player.change_smarts(randint(0, 2) + (player.has_trait("NERD")))
 				player.change_knowledge(randint(5, 10))
 				player.change_energy(-10)
 				if x_in_y(player.smarts, 2000):
-				        player.learn_trait("NERD")
+					player.learn_trait("NERD")
 				player.studied = True
 		elif choice == 3:
 			can_drop_out = player.smarts < randint(8, 12) + randint(0, 13)
@@ -729,30 +729,30 @@ def main_menu(player):
 					_("You quizzed each other for the science test."),
 					_("You formed a virtual study group online."),
 					_("You and your friends reviewed math problems at the library, turning equations into a game of 'solve or snack'."),
-			         	_("You studied history together at a cafe, reenacting battles with sugar packets and straws."),
-			            	_("You quizzed each other for the science test, making up goofy mnemonics that had everyone in stitches."),
-				        _("You formed a virtual study group online, with everyone accidentally leaving their mics on during snack breaks."),
+						_("You studied history together at a cafe, reenacting battles with sugar packets and straws."),
+						_("You quizzed each other for the science test, making up goofy mnemonics that had everyone in stitches."),
+					_("You formed a virtual study group online, with everyone accidentally leaving their mics on during snack breaks."),
 					_("You tackled literature notes in the park, dramatically reading passages like Shakespearean actors."),
-				        _("You crammed for biology at a friend's house, drawing cell diagrams in chalk on the driveway."),
-				        _("You worked on chemistry problems in the school lab, pretending to be mad scientists with wild hair."),
-				        _("You studied foreign language vocab at a diner, shouting phrases over milkshakes and fries."),
-				        _("You reviewed physics concepts at the skate park, comparing ramps to projectile motion."),
-				        _("You group-studied for English, writing absurd short stories to test grammar rules."),
-				        _("You dove into computer science at a tech shop, debugging code while surrounded by gadget chaos."),
-				        _("You practiced debate skills in the library, arguing silly topics like 'cats vs. dogs' for fun."),
-				        _("You studied geography by mapping out a fictional world on a giant poster board."),
-				        _("You tackled algebra together in a treehouse, solving equations while munching on candy."),
-				        _("You prepped for a history exam at the museum, whispering facts in front of ancient artifacts."),
-				        _("You worked on art history in a gallery, sketching replicas of famous paintings with crayons."),
-				        _("You studied music theory in a garage, banging on pots and pans to understand rhythm."),
-				        _("You reviewed economics at the mall, analyzing fake budgets for a dream shopping spree."),
-				        _("You quizzed each other on psychology terms, diagnosing your study group's 'procrastination syndrome'."),
-				        _("You studied environmental science by the lake, debating solutions while skipping rocks."),
-				        _("You tackled trigonometry in a backyard, using a protractor to measure angles of a swing set."),
-				        _("You formed a flashcards frenzy at a pizza place, tossing cards like confetti for correct answers."),
-				        _("You studied astronomy under the stars, pointing out constellations with a laser pointer."),
-				        _("You worked on group projects in a basement, turning research into a podcast recording session."),
-				        _("You reviewed philosophy in a coffee shop, debating life's big questions over lattes."),
+					_("You crammed for biology at a friend's house, drawing cell diagrams in chalk on the driveway."),
+					_("You worked on chemistry problems in the school lab, pretending to be mad scientists with wild hair."),
+					_("You studied foreign language vocab at a diner, shouting phrases over milkshakes and fries."),
+					_("You reviewed physics concepts at the skate park, comparing ramps to projectile motion."),
+					_("You group-studied for English, writing absurd short stories to test grammar rules."),
+					_("You dove into computer science at a tech shop, debugging code while surrounded by gadget chaos."),
+					_("You practiced debate skills in the library, arguing silly topics like 'cats vs. dogs' for fun."),
+					_("You studied geography by mapping out a fictional world on a giant poster board."),
+					_("You tackled algebra together in a treehouse, solving equations while munching on candy."),
+					_("You prepped for a history exam at the museum, whispering facts in front of ancient artifacts."),
+					_("You worked on art history in a gallery, sketching replicas of famous paintings with crayons."),
+					_("You studied music theory in a garage, banging on pots and pans to understand rhythm."),
+					_("You reviewed economics at the mall, analyzing fake budgets for a dream shopping spree."),
+					_("You quizzed each other on psychology terms, diagnosing your study group's 'procrastination syndrome'."),
+					_("You studied environmental science by the lake, debating solutions while skipping rocks."),
+					_("You tackled trigonometry in a backyard, using a protractor to measure angles of a swing set."),
+					_("You formed a flashcards frenzy at a pizza place, tossing cards like confetti for correct answers."),
+					_("You studied astronomy under the stars, pointing out constellations with a laser pointer."),
+					_("You worked on group projects in a basement, turning research into a podcast recording session."),
+					_("You reviewed philosophy in a coffee shop, debating life's big questions over lattes."),
 				]
 				print(random.choice(study_events))
 				player.friendships += 1
@@ -762,91 +762,91 @@ def main_menu(player):
 				player.change_stress(-randint(0, 2))
 				player.change_knowledge(randint(2, 4))
 				player.change_energy(-7)
-                elif choice == 7:
-                        if player.energy < 3:
-                                print(_("You're too tired to gossip."))
-                        else:
-                                gossip_events = [
-                                        _("You spread a rumor about a classmate."),
-                                        _("You talked about the latest drama in school."),
-                                        _("You whispered secrets with a friend."),
-                                        _("You accidentally gossiped about the wrong person!"),
-                                        _("You spread a juicy rumor about a classmate's secret talent for yodeling in the shower."),
-                                        _("You dished about the latest school drama over lunch, complete with wild theories about who started it."),
-                                        _("You whispered secrets with a friend behind the bleachers, giggling so hard you almost got caught."),
-                                        _("You accidentally gossiped about the wrong person and now everyone's talking about your mix-up!"),
-                                        _("You overheard a wild story about the principal's secret karaoke nights and shared it with the squad."),
-                                        _("You speculated about who left a love note in the library, creating a school-wide mystery."),
-                                        _("You traded gossip about the cafeteria’s mystery meat recipe, swearing it’s alien food."),
-                                        _("You and your bestie debated whether the new kid is secretly a movie star in disguise."),
-                                        _("You passed on a rumor that the math teacher’s chalkboard doodles are coded messages."),
-                                        _("You shared a hot tip about a secret party happening in the old gym this weekend."),
-                                        _("You got the scoop on why the school mascot costume smells like tacos and told everyone."),
-                                        _("You whispered about a classmate’s epic prank that turned the fountain bright pink."),
-                                        _("You spread a tale about a haunted locker that only opens at midnight."),
-                                        _("You gossiped about who’s been sneaking extra cookies from the bake sale table."),
-                                        _("You shared a wild guess about the gym teacher’s secret life as a roller derby champ."),
-                                        _("You and your crew debated who’s behind the anonymous advice column in the school paper."),
-                                        _("You let slip a rumor about a teacher’s pet parrot that swears in three languages."),
-                                        _("You traded stories about a classmate’s legendary dance moves at the talent show."),
-                                        _("You whispered about a secret club that meets in the janitor’s closet after hours."),
-                                        _("You speculated on who keeps leaving glitter bombs in the hallways for fun."),
-                                        _("You shared a theory that the school’s Wi-Fi outages are caused by a rogue hacker clique."),
-                                        _("You giggled over gossip about a classmate’s bizarre collection of vintage lunchboxes."),
-                                        _("You passed on a rumor that the science lab skeleton is actually a retired pirate’s bones."),
-                                        _("You dished about a teacher’s coffee addiction, claiming they hide espresso in their water bottle."),
-                                        _("You spread word of a secret handshake that only the cool kids know—now everyone’s trying it."),
-                                ]
-                                print(random.choice(gossip_events))
-                                player.change_popularity(randint(1, 4))
-                                player.rivalries += 1
-                                player.change_stress(randint(1, 4))
-                                player.change_school_reputation(-randint(1, 3))
-                                player.change_energy(-3)
-                elif choice == parent_meeting_idx:
-                        task, action = random.choice(PARENT_TASKS)
-                        print(_("Your parents ask you to {task}. Do you comply?").format(task=task))
-                        if choice_input(_("Yes"), _("No")) == 1:
-                                action(player)
-                                player.change_parent_approval(randint(4, 8))
-                                print(_("Your parents are pleased."))
-                        else:
-                                player.change_parent_approval(-randint(4, 8))
-                                print(_("Your parents are disappointed."))
-                elif choice == teacher_meeting_idx:
-                        task, action = random.choice(TEACHER_TASKS)
-                        print(_("Your teacher asks you to {task}. Do you comply?").format(task=task))
-                        if choice_input(_("Yes"), _("No")) == 1:
-                                action(player)
-                                player.change_teacher_favor(randint(4, 8))
-                                print(_("Your teacher appreciates your effort."))
-                        else:
-                                player.change_teacher_favor(-randint(4, 8))
-                                print(_("You declined the request."))
-                else:
-                        idx = choice - base_len
-                        if stage == "primary":
-                                if idx == 1:
-                                        if player.energy < 5:
-                                                print(_("You're too tired."))
-                                        elif not player.club:
-                                                club_names = [_(c[0]) for c in CLUB_OPTIONS]
-                                                cchoice = choice_input(*club_names)
-                                                cname, reqs, reward = CLUB_OPTIONS[cchoice - 1]
-                                                print(_("Requirements for {club}:").format(club=cname))
-                                                for skill, val in reqs.items():
-                                                        pval = player.skills.get(skill, 0)
-                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
-                                                meets = all(
-                                                        player.skills.get(skill, 0) >= val
-                                                        for skill, val in reqs.items()
-                                                )
-                                                if meets:
-                                                        print(
-                                                                _("You joined the {club}.").format(
-                                                                        club=cname.lower()
-                                                                )
-                                                        )
+		elif choice == 7:
+			if player.energy < 3:
+				print(_("You're too tired to gossip."))
+			else:
+				gossip_events = [
+					_("You spread a rumor about a classmate."),
+					_("You talked about the latest drama in school."),
+					_("You whispered secrets with a friend."),
+					_("You accidentally gossiped about the wrong person!"),
+					_("You spread a juicy rumor about a classmate's secret talent for yodeling in the shower."),
+					_("You dished about the latest school drama over lunch, complete with wild theories about who started it."),
+					_("You whispered secrets with a friend behind the bleachers, giggling so hard you almost got caught."),
+					_("You accidentally gossiped about the wrong person and now everyone's talking about your mix-up!"),
+					_("You overheard a wild story about the principal's secret karaoke nights and shared it with the squad."),
+					_("You speculated about who left a love note in the library, creating a school-wide mystery."),
+					_("You traded gossip about the cafeteria’s mystery meat recipe, swearing it’s alien food."),
+					_("You and your bestie debated whether the new kid is secretly a movie star in disguise."),
+					_("You passed on a rumor that the math teacher’s chalkboard doodles are coded messages."),
+					_("You shared a hot tip about a secret party happening in the old gym this weekend."),
+					_("You got the scoop on why the school mascot costume smells like tacos and told everyone."),
+					_("You whispered about a classmate’s epic prank that turned the fountain bright pink."),
+					_("You spread a tale about a haunted locker that only opens at midnight."),
+					_("You gossiped about who’s been sneaking extra cookies from the bake sale table."),
+					_("You shared a wild guess about the gym teacher’s secret life as a roller derby champ."),
+					_("You and your crew debated who’s behind the anonymous advice column in the school paper."),
+					_("You let slip a rumor about a teacher’s pet parrot that swears in three languages."),
+					_("You traded stories about a classmate’s legendary dance moves at the talent show."),
+					_("You whispered about a secret club that meets in the janitor’s closet after hours."),
+					_("You speculated on who keeps leaving glitter bombs in the hallways for fun."),
+					_("You shared a theory that the school’s Wi-Fi outages are caused by a rogue hacker clique."),
+					_("You giggled over gossip about a classmate’s bizarre collection of vintage lunchboxes."),
+					_("You passed on a rumor that the science lab skeleton is actually a retired pirate’s bones."),
+					_("You dished about a teacher’s coffee addiction, claiming they hide espresso in their water bottle."),
+					_("You spread word of a secret handshake that only the cool kids know—now everyone’s trying it."),
+				]
+				print(random.choice(gossip_events))
+				player.change_popularity(randint(1, 4))
+				player.rivalries += 1
+				player.change_stress(randint(1, 4))
+				player.change_school_reputation(-randint(1, 3))
+				player.change_energy(-3)
+		elif choice == parent_meeting_idx:
+			task, action = random.choice(PARENT_TASKS)
+			print(_("Your parents ask you to {task}. Do you comply?").format(task=task))
+			if choice_input(_("Yes"), _("No")) == 1:
+				action(player)
+				player.change_parent_approval(randint(4, 8))
+				print(_("Your parents are pleased."))
+			else:
+				player.change_parent_approval(-randint(4, 8))
+				print(_("Your parents are disappointed."))
+		elif choice == teacher_meeting_idx:
+			task, action = random.choice(TEACHER_TASKS)
+			print(_("Your teacher asks you to {task}. Do you comply?").format(task=task))
+			if choice_input(_("Yes"), _("No")) == 1:
+				action(player)
+				player.change_teacher_favor(randint(4, 8))
+				print(_("Your teacher appreciates your effort."))
+			else:
+				player.change_teacher_favor(-randint(4, 8))
+				print(_("You declined the request."))
+		else:
+			idx = choice - base_len
+			if stage == "primary":
+				if idx == 1:
+					if player.energy < 5:
+						print(_("You're too tired."))
+					elif not player.club:
+						club_names = [_(c[0]) for c in CLUB_OPTIONS]
+						cchoice = choice_input(*club_names)
+						cname, reqs, reward = CLUB_OPTIONS[cchoice - 1]
+						print(_("Requirements for {club}:").format(club=cname))
+						for skill, val in reqs.items():
+							pval = player.skills.get(skill, 0)
+							print(f" - {skill.capitalize()}: {pval}/{val}")
+						meets = all(
+							player.skills.get(skill, 0) >= val
+							for skill, val in reqs.items()
+						)
+						if meets:
+							print(
+								_("You joined the {club}.").format(
+									club=cname.lower()
+								)
+							)
 							player.change_happiness(randint(5, 10))
 							player.change_skill(reward, randint(1, 3))
 							player.change_energy(-5)
@@ -936,25 +936,25 @@ def main_menu(player):
 				elif idx == 5:
 					if player.energy < 10:
 						print(_("You're too tired for sports."))
-                                        elif not player.sports_team:
-                                                sport_names = [_(s[0]) for s in SPORT_OPTIONS]
-                                                schoice = choice_input(*sport_names)
-                                                sname, reqs = SPORT_OPTIONS[schoice - 1]
-                                                print(_("Requirements for {sport} team:").format(sport=sname))
-                                                for skill, val in reqs.items():
-                                                        pval = player.skills.get(skill, 0)
-                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
-                                                meets = True
-                                                if stage != "primary":
-                                                        meets = all(
-                                                                player.skills.get(skill, 0) >= val
-                                                                for skill, val in reqs.items()
-                                                        )
-                                                if meets:
-                                                        print(
-                                                                _("You joined the {sport} team.").format(
-                                                                        sport=sname.lower()
-                                                                )
+					elif not player.sports_team:
+						sport_names = [_(s[0]) for s in SPORT_OPTIONS]
+						schoice = choice_input(*sport_names)
+						sname, reqs = SPORT_OPTIONS[schoice - 1]
+						print(_("Requirements for {sport} team:").format(sport=sname))
+						for skill, val in reqs.items():
+							pval = player.skills.get(skill, 0)
+							print(f" - {skill.capitalize()}: {pval}/{val}")
+						meets = True
+						if stage != "primary":
+							meets = all(
+								player.skills.get(skill, 0) >= val
+								for skill, val in reqs.items()
+							)
+						if meets:
+							print(
+								_("You joined the {sport} team.").format(
+									sport=sname.lower()
+								)
 							)
 							player.sports_team = True
 							player.sports_team_name = sname
@@ -969,161 +969,161 @@ def main_menu(player):
 							)
 					else:
 						print(_("You are already on a sports team."))
-                        elif stage == "middle":
-                                if idx == 1:
-                                        if player.career_aspiration:
-                                                print(_("You already chose a career aspiration: {asp}." ).format(asp=player.career_aspiration))
-                                        else:
-                                                opts = [_(o) for o in CAREER_OPTIONS]
-                                                cchoice = choice_input(*opts)
-                                                player.career_aspiration = CAREER_OPTIONS[cchoice - 1]
-                                                print(_("You now aspire to a career in {asp}." ).format(asp=player.career_aspiration.lower()))
-                                                player.change_happiness(randint(1,3))
-                                elif idx == 2:
-                                        if player.energy < 4:
-                                                print(_("You're too tired to pick an elective."))
-                                        else:
-                                                print(_("Which elective will you choose?"))
-                                                echoice = choice_input(_("Art"), _("Music"), _("Computer"), _("Foreign language"))
-                                                elective_map = {1:("social",2),2:("social",2),3:("academic",3),4:("academic",2)}
-                                                skill, amt = elective_map.get(echoice, ("academic",1))
-                                                player.change_skill(skill, amt)
-                                                player.change_happiness(randint(1,3))
-                                                player.change_knowledge(2)
-                                                player.change_energy(-4)
-                                elif idx == 3:
-                                        if player.energy < 10:
-                                                print(_("You're too tired for sports."))
-                                        elif not player.sports_team:
-                                                sport_names = [_(s[0]) for s in SPORT_OPTIONS]
-                                                schoice = choice_input(*sport_names)
-                                                sname, reqs = SPORT_OPTIONS[schoice - 1]
-                                                print(_("Requirements for {sport} team:").format(sport=sname))
-                                                for skill, val in reqs.items():
-                                                        pval = player.skills.get(skill, 0)
-                                                        print(f" - {skill.capitalize()}: {pval}/{val}")
-                                                meets = all(
-                                                        player.skills.get(skill, 0) >= val
-                                                        for skill, val in reqs.items()
-                                                )
-                                                if meets:
-                                                        print(
-                                                                _("You joined the {sport} team.").format(
-                                                                        sport=sname.lower()
-                                                                )
-                                                        )
-                                                        player.sports_team = True
-                                                        player.sports_team_name = sname
-                                                        player.change_skill("athletic", randint(1,3))
-                                                        player.change_health(randint(1,4))
-                                                        player.change_energy(-10)
-                                                else:
-                                                        print(
-                                                                _("You don't meet the requirements for the {sport} team.").format(
-                                                                        sport=sname.lower()
-                                                                )
-                                                        )
-                                        else:
-                                                print(_("You are already on a sports team."))
-                                elif idx == 4:
-                                        if player.energy < 3:
-                                                print(_("You're too tired for study group."))
-                                        else:
-                                                print(_("You participated in a study group."))
-                                                player.change_skill("academic",2)
-                                                player.change_grades(randint(1,3))
-                                                player.change_happiness(randint(1,3))
-                                                player.change_energy(-3)
-                                elif idx == 5:
-                                        if player.energy < 5:
-                                                print(_("You're too tired for student council."))
-                                        elif not player.student_council:
-                                                print(_("You joined the student council."))
-                                                player.student_council = True
-                                                player.change_skill("leadership",2)
-                                                player.change_happiness(randint(2,4))
-                                                player.change_energy(-5)
-                                        else:
-                                                print(_("You are already on the student council."))
-                                elif idx == 6:
-                                        if player.energy < 4:
-                                                print(_("You're too tired to deal with this."))
-                                        else:
-                                                print(_("A bully confronts you. How do you respond?"))
-                                                bchoice = choice_input(_("Report to teacher"), _("Stand up"), _("Ignore"))
-                                                player.change_energy(-4)
-                                                if bchoice == 1:
-                                                        player.change_karma(randint(1,3))
-                                                        player.change_happiness(-randint(1,3))
-                                                elif bchoice == 2:
-                                                        if one_in(2):
-                                                                print(_("You stood up to the bully successfully."))
-                                                                player.change_happiness(randint(2,5))
-                                                        else:
-                                                                print(_("The bully intimidated you."))
-                                                                player.change_happiness(-randint(2,5))
-                                                else:
-                                                        player.change_happiness(-randint(1,3))
-                        elif stage == "high":
-                                if idx == 1:
-                                        if player.career_aspiration is None:
-                                                print(_("You need to set a career aspiration before enrolling in advanced courses."))
-                                        elif player.energy < 8:
-                                                print(_("You're too tired for advanced courses."))
-                                        else:
-                                                cname, skill = ADVANCED_COURSES.get(player.career_aspiration, ("advanced courses", "academic"))
-                                                print(_("You enrolled in the {course}.").format(course=cname))
-                                                player.change_grades(randint(1,4))
-                                                player.change_skill(skill,3)
-                                                player.change_skill("academic",3)
-                                                player.change_knowledge(randint(3,5))
-                                                player.change_energy(-8)
-                                elif idx == 2:
-                                        if player.energy < 6:
-                                                print(_("You're too tired for leadership roles."))
-                                        elif not player.student_council:
-                                                print(_("You took on an extracurricular leadership role."))
-                                                player.student_council = True
-				                player.change_skill("leadership",3)
-				                player.change_happiness(randint(2,5))
-				                player.change_energy(-6)
-				        else:
-				                print(_("You are already a student leader."))
+			elif stage == "middle":
+				if idx == 1:
+					if player.career_aspiration:
+						print(_("You already chose a career aspiration: {asp}." ).format(asp=player.career_aspiration))
+					else:
+						opts = [_(o) for o in CAREER_OPTIONS]
+						cchoice = choice_input(*opts)
+						player.career_aspiration = CAREER_OPTIONS[cchoice - 1]
+						print(_("You now aspire to a career in {asp}." ).format(asp=player.career_aspiration.lower()))
+						player.change_happiness(randint(1,3))
+				elif idx == 2:
+					if player.energy < 4:
+						print(_("You're too tired to pick an elective."))
+					else:
+						print(_("Which elective will you choose?"))
+						echoice = choice_input(_("Art"), _("Music"), _("Computer"), _("Foreign language"))
+						elective_map = {1:("social",2),2:("social",2),3:("academic",3),4:("academic",2)}
+						skill, amt = elective_map.get(echoice, ("academic",1))
+						player.change_skill(skill, amt)
+						player.change_happiness(randint(1,3))
+						player.change_knowledge(2)
+						player.change_energy(-4)
 				elif idx == 3:
-				        if player.energy < 10:
-				                print(_("You're too tired to go to prom."))
-				        else:
-				                print(_("You went to prom."))
-				                player.change_happiness(randint(8,15))
-				                player.change_skill("social",2)
-				                player.change_energy(-10)
+					if player.energy < 10:
+						print(_("You're too tired for sports."))
+					elif not player.sports_team:
+						sport_names = [_(s[0]) for s in SPORT_OPTIONS]
+						schoice = choice_input(*sport_names)
+						sname, reqs = SPORT_OPTIONS[schoice - 1]
+						print(_("Requirements for {sport} team:").format(sport=sname))
+						for skill, val in reqs.items():
+							pval = player.skills.get(skill, 0)
+							print(f" - {skill.capitalize()}: {pval}/{val}")
+						meets = all(
+							player.skills.get(skill, 0) >= val
+							for skill, val in reqs.items()
+						)
+						if meets:
+							print(
+								_("You joined the {sport} team.").format(
+									sport=sname.lower()
+								)
+							)
+							player.sports_team = True
+							player.sports_team_name = sname
+							player.change_skill("athletic", randint(1,3))
+							player.change_health(randint(1,4))
+							player.change_energy(-10)
+						else:
+							print(
+								_("You don't meet the requirements for the {sport} team.").format(
+									sport=sname.lower()
+								)
+							)
+					else:
+						print(_("You are already on a sports team."))
 				elif idx == 4:
-				        if player.part_time_job:
-				                print(_("You quit your part-time job to study more."))
-				                player.part_time_job = False
-				                player.change_grades(randint(3,5))
-				        else:
-				                if player.energy < 10:
-				                    print(_("You're too tired to start working."))
-				                else:
-				                    print(_("You started a part-time job."))
-				                    player.part_time_job = True
-				                    player.change_grades(-randint(3,5))
-				                    gain = randint(200, 400)
-				                    if player.better_job:
-				                            gain = randint(300, 600)
-				                    player.money += gain
-				                    player.change_energy(-10)
+					if player.energy < 3:
+						print(_("You're too tired for study group."))
+					else:
+						print(_("You participated in a study group."))
+						player.change_skill("academic",2)
+						player.change_grades(randint(1,3))
+						player.change_happiness(randint(1,3))
+						player.change_energy(-3)
 				elif idx == 5:
-				        if player.energy < 8:
-				                print(_("You're too tired for tests."))
-				        else:
-				                print(_("You took college prep tests."))
-				                player.college_prep = clamp(player.college_prep + randint(5,10), 0, 100)
-				                player.change_skill("academic",3)
-				                player.change_grades(randint(1,3))
-				                player.change_knowledge(randint(3,5))
-				                player.change_energy(-8)
+					if player.energy < 5:
+						print(_("You're too tired for student council."))
+					elif not player.student_council:
+						print(_("You joined the student council."))
+						player.student_council = True
+						player.change_skill("leadership",2)
+						player.change_happiness(randint(2,4))
+						player.change_energy(-5)
+					else:
+						print(_("You are already on the student council."))
+				elif idx == 6:
+					if player.energy < 4:
+						print(_("You're too tired to deal with this."))
+					else:
+						print(_("A bully confronts you. How do you respond?"))
+						bchoice = choice_input(_("Report to teacher"), _("Stand up"), _("Ignore"))
+						player.change_energy(-4)
+						if bchoice == 1:
+							player.change_karma(randint(1,3))
+							player.change_happiness(-randint(1,3))
+						elif bchoice == 2:
+							if one_in(2):
+								print(_("You stood up to the bully successfully."))
+								player.change_happiness(randint(2,5))
+							else:
+								print(_("The bully intimidated you."))
+								player.change_happiness(-randint(2,5))
+						else:
+							player.change_happiness(-randint(1,3))
+			elif stage == "high":
+				if idx == 1:
+					if player.career_aspiration is None:
+						print(_("You need to set a career aspiration before enrolling in advanced courses."))
+					elif player.energy < 8:
+						print(_("You're too tired for advanced courses."))
+					else:
+						cname, skill = ADVANCED_COURSES.get(player.career_aspiration, ("advanced courses", "academic"))
+						print(_("You enrolled in the {course}.").format(course=cname))
+						player.change_grades(randint(1,4))
+						player.change_skill(skill,3)
+						player.change_skill("academic",3)
+						player.change_knowledge(randint(3,5))
+						player.change_energy(-8)
+				elif idx == 2:
+					if player.energy < 6:
+						print(_("You're too tired for leadership roles."))
+					elif not player.student_council:
+						print(_("You took on an extracurricular leadership role."))
+						player.student_council = True
+						player.change_skill("leadership",3)
+						player.change_happiness(randint(2,5))
+						player.change_energy(-6)
+					else:
+						print(_("You are already a student leader."))
+				elif idx == 3:
+					if player.energy < 10:
+						print(_("You're too tired to go to prom."))
+					else:
+						print(_("You went to prom."))
+						player.change_happiness(randint(8,15))
+						player.change_skill("social",2)
+						player.change_energy(-10)
+				elif idx == 4:
+					if player.part_time_job:
+						print(_("You quit your part-time job to study more."))
+						player.part_time_job = False
+						player.change_grades(randint(3,5))
+					else:
+						if player.energy < 10:
+							print(_("You're too tired to start working."))
+						else:
+							print(_("You started a part-time job."))
+							player.part_time_job = True
+							player.change_grades(-randint(3,5))
+							gain = randint(200, 400)
+							if player.better_job:
+								gain = randint(300, 600)
+							player.money += gain
+							player.change_energy(-10)
+				elif idx == 5:
+					if player.energy < 8:
+						print(_("You're too tired for tests."))
+					else:
+						print(_("You took college prep tests."))
+						player.college_prep = clamp(player.college_prep + randint(5,10), 0, 100)
+						player.change_skill("academic",3)
+						player.change_grades(randint(1,3))
+						player.change_knowledge(randint(3,5))
+						player.change_energy(-8)
 				
 	if choice == _("Debug Menu"):
 		choice = choice_input(_("Back"), _("Stats"), _("Identity"))
@@ -1228,25 +1228,25 @@ def main_menu(player):
 			title, salary = jobs[job_choice - 2]
 			if yes_no(
 				_(
-				        "You found a job as a {title} with a salary of ${salary:,}. Would you like to apply?"
+					"You found a job as a {title} with a salary of ${salary:,}. Would you like to apply?"
 				).format(title=title, salary=salary)
 			):
 				m = 100 + round_stochastic((salary - 40000) / 300)
 				mod = 50 - player.smarts
 				if randint(1, 3) == 1:
-				        mod += round((50 - player.karma) / 2)
+					mod += round((50 - player.karma) / 2)
 				roll = randint(1, m)
 				if mod > 0:
-				        roll += randint(0, mod)
+					roll += randint(0, mod)
 				elif mod < 0:
-				        roll -= randint(0, abs(mod))
+					roll -= randint(0, abs(mod))
 				if roll <= 100:
-				        print(_("You got the job!"))
-				        player.change_happiness(4)
-				        player.get_job(salary, title)
+					print(_("You got the job!"))
+					player.change_happiness(4)
+					player.get_job(salary, title)
 				else:
-				        print(_("You didn't get an interview."))
-				        player.change_happiness(-randint(1, 4))
+					print(_("You didn't get an interview."))
+					player.change_happiness(-randint(1, 4))
 			else:
 				clear_screen()
 	elif choice == _("Job Menu"):
