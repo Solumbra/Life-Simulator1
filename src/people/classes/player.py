@@ -4,6 +4,7 @@ from random import randint, gauss
 from src.lifesim_lib.const import *
 from src.lifesim_lib.translation import _
 from src.lifesim_lib.lifesim_lib import *
+from src.lifesim_lib.goal import Goal
 from src.people.classes.parent import Parent
 from src.people.classes.person import Person
 from src.people.classes.sibling import Sibling
@@ -101,6 +102,55 @@ class Player(Person):
 		self.update_plastic_surgeon(0)
 		self.update_plastic_surgeon(1)
 		self.social_media = None
+		self.goals = [
+			Goal(
+				_("Reach adulthood (age 18)"),
+				lambda p: p.age >= 18,
+				lambda p: f"{p.age}/18",
+			),
+			Goal(
+				_("Get a job"),
+				lambda p: p.has_job,
+				lambda p: _("Employed") if p.has_job else _("Unemployed"),
+			),
+			Goal(
+				_("Accumulate $100,000"),
+				lambda p: p.money >= 100_000,
+				lambda p: f"${p.money:,}/100,000",
+			),
+		]
+		self.current_goal_index = 0
+
+	def get_current_goal(self):
+		if self.current_goal_index < len(self.goals):
+			return self.goals[self.current_goal_index]
+		return None
+
+	def get_goal_description(self):
+		goal = self.get_current_goal()
+		if goal:
+			return goal.description
+		return _("All goals completed!")
+
+	def get_goal_progress(self):
+		goal = self.get_current_goal()
+		if goal:
+			prog = goal.progress(self)
+			if prog is not None:
+				return prog
+		return ""
+
+	def check_goals(self):
+		while self.current_goal_index < len(self.goals):
+			goal = self.goals[self.current_goal_index]
+			if goal.is_complete(self):
+				print(_("Goal complete: {goal}").format(goal=goal.description))
+				self.current_goal_index += 1
+				if self.current_goal_index < len(self.goals):
+					next_goal = self.goals[self.current_goal_index].description
+					print(_("New goal: {goal}").format(goal=next_goal))
+			else:
+				break
 
 	def learn_trait(self, trait):
 		if trait not in TRAITS_DICT:
