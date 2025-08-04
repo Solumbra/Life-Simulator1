@@ -512,8 +512,22 @@ def main_menu(player):
                 print(_("School Menu"))
                 print()
                 display_bar(_("Grades"), player.grades)
+                display_bar(_("Popularity"), player.popularity)
+                display_data(_("Friends"), player.friendships)
+                display_data(_("Rivals"), player.rivalries)
+                display_data(_("Romantic interests"), player.romantic_interests)
                 stage = player.get_school_stage()
-                base_options = [_("Back"), _("Study harder"), _("Drop out"), _("Skip school")]
+                base_options = [
+                        _("Back"),
+                        _("Study harder"),
+                        _("Drop out"),
+                        _("Skip school"),
+                        _("Hang out"),
+                        _("Study together"),
+                        _("Gossip"),
+                ]
+                if stage != "primary":
+                        base_options.append(_("Attend party"))
                 if stage == "primary":
                         extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
                 elif stage == "middle":
@@ -562,6 +576,35 @@ You were sent to the principal's office and got detention."))
                                 player.change_happiness(randint(3, 7))
                                 player.change_karma(-randint(1, 6))
                         player.skipped_school = True
+                elif choice == 5:
+                        print(_("You hung out with friends."))
+                        player.friendships += 1
+                        player.change_popularity(randint(1, 3))
+                        player.change_happiness(randint(2, 5))
+                        player.change_stress(-randint(0, 3))
+                elif choice == 6:
+                        print(_("You studied together with classmates."))
+                        player.friendships += 1
+                        player.change_grades(randint(1, 3))
+                        player.change_skill("academic", 1)
+                        player.change_popularity(randint(0, 2))
+                        player.change_stress(-randint(0, 2))
+                elif choice == 7:
+                        print(_("You gossiped about a classmate."))
+                        player.change_popularity(randint(1, 4))
+                        player.rivalries += 1
+                        player.change_stress(randint(1, 4))
+                        player.change_school_reputation(-randint(1, 3))
+                elif choice == 8 and _("Attend party") in base_options:
+                        print(_("You attended a party."))
+                        player.change_happiness(randint(4, 8))
+                        player.change_popularity(randint(3, 6))
+                        player.change_stress(randint(0, 5))
+                        player.change_grades(-randint(1, 3))
+                        if one_in(3):
+                                player.romantic_interests += 1
+                        for parent in player.parents.values():
+                                parent.change_relationship(-randint(1, 4))
                 else:
                         idx = choice - len(base_options)
                         if stage == "primary":
