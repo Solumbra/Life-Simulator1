@@ -508,211 +508,210 @@ def main_menu(player):
 	if choice == _("Activities"):	
 		activities_menu(player)			
 	
-        if choice == _("School"):
-                print(_("School Menu"))
-                print()
-                display_bar(_("Grades"), player.grades)
-                display_bar(_("Popularity"), player.popularity)
-                display_data(_("Friends"), player.friendships)
-                display_data(_("Rivals"), player.rivalries)
-                display_data(_("Romantic interests"), player.romantic_interests)
-                stage = player.get_school_stage()
-                base_options = [
-                        _("Back"),
-                        _("Study harder"),
-                        _("Drop out"),
-                        _("Skip school"),
-                        _("Hang out"),
-                        _("Study together"),
-                        _("Gossip"),
-                ]
-                if stage != "primary":
-                        base_options.append(_("Attend party"))
-                if stage == "primary":
-                        extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
-                elif stage == "middle":
-                        extra = [_("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
-                elif stage == "high":
-                        extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
-                else:
-                        extra = []
-                choice = choice_input(*(base_options + extra))
-                clear_screen()
-                if choice == 2:
-                        print(_("You began studying harder"))
-                        if not player.studied:
-                                player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
-                                player.change_smarts(randint(0, 2) + (player.has_trait("NERD")))
-                                if x_in_y(player.smarts, 2000):
-                                        player.learn_trait("NERD")
-                                player.studied = True
-                elif choice == 3:
-                        can_drop_out = player.smarts < randint(8, 12) + randint(0, 13)
-                        can_drop_out &= not player.tried_to_drop_out
-                        if (
-                                player.age >= 18
-                                or player.uv_years > 0
-                                or (player.age >= randint(15, 16) and can_drop_out)
-                        ):
-                                player.dropped_out = True
-                                player.grades = None
-                                print(_("You dropped out of school."))
-                                if player.uv_years > 0:
-                                        player.uv_years = 0
-                        else:
-                                player.tried_to_drop_out = True
-                                print(_("Your parents won't let you drop out of school."))
-                elif choice == 4:
-                        place = random.choice(SPEND_TIME_PLACES)
-                        display_event(_("You skipped school and went {place} instead.").format(place=place), cls=False)
-                        player.change_smarts(-2)
-                        player.change_grades(-randint(4, 8))
-                        if player.uv_years == 0 and one_in(5):
-                                display_event(_("You were caught skipping school!
-You were sent to the principal's office and got detention."))
-                                player.change_happiness(-randint(15, 25))
-                                player.change_karma(-randint(1, 6))
-                        elif not player.skipped_school:
-                                player.change_happiness(randint(3, 7))
-                                player.change_karma(-randint(1, 6))
-                        player.skipped_school = True
-                elif choice == 5:
-                        print(_("You hung out with friends."))
-                        player.friendships += 1
-                        player.change_popularity(randint(1, 3))
-                        player.change_happiness(randint(2, 5))
-                        player.change_stress(-randint(0, 3))
-                elif choice == 6:
-                        print(_("You studied together with classmates."))
-                        player.friendships += 1
-                        player.change_grades(randint(1, 3))
-                        player.change_skill("academic", 1)
-                        player.change_popularity(randint(0, 2))
-                        player.change_stress(-randint(0, 2))
-                elif choice == 7:
-                        print(_("You gossiped about a classmate."))
-                        player.change_popularity(randint(1, 4))
-                        player.rivalries += 1
-                        player.change_stress(randint(1, 4))
-                        player.change_school_reputation(-randint(1, 3))
-                elif choice == 8 and _("Attend party") in base_options:
-                        print(_("You attended a party."))
-                        player.change_happiness(randint(4, 8))
-                        player.change_popularity(randint(3, 6))
-                        player.change_stress(randint(0, 5))
-                        player.change_grades(-randint(1, 3))
-                        if one_in(3):
-                                player.romantic_interests += 1
-                        for parent in player.parents.values():
-                                parent.change_relationship(-randint(1, 4))
-                else:
-                        idx = choice - len(base_options)
-                        if stage == "primary":
-                                if idx == 1:
-                                        if not player.club:
-                                                print(_("You joined a club."))
-                                                player.change_happiness(randint(5, 10))
-                                                player.change_skill("social", randint(1, 3))
-                                                player.club = True
-                                        else:
-                                                print(_("You are already in a club."))
-                                elif idx == 2:
-                                        print(_("You started a new project."))
-                                        player.change_skill("academic", randint(1, 3))
-                                        player.change_grades(randint(1, 3))
-                                elif idx == 3:
-                                        print(_("You asked a question in class."))
-                                        player.change_skill("academic", 1)
-                                        player.change_grades(randint(0, 2))
-                                elif idx == 4:
-                                        print(_("You helped a classmate."))
-                                        player.change_happiness(randint(2,5))
-                                        player.change_karma(randint(1,3))
-                                        player.change_skill("social", 1)
-                                elif idx == 5:
-                                        if not player.sports_team:
-                                                print(_("You joined a sports team."))
-                                                player.sports_team = True
-                                                player.change_skill("athletic", randint(1,3))
-                                                player.change_health(randint(1,4))
-                                        else:
-                                                print(_("You are already on a sports team."))
-                        elif stage == "middle":
-                                if idx == 1:
-                                        print(_("Which elective will you choose?"))
-                                        echoice = choice_input(_("Art"), _("Music"), _("Computer"), _("Foreign language"))
-                                        elective_map = {1:("social",2),2:("social",2),3:("academic",3),4:("academic",2)}
-                                        skill, amt = elective_map.get(echoice, ("academic",1))
-                                        player.change_skill(skill, amt)
-                                        player.change_happiness(randint(1,3))
-                                elif idx == 2:
-                                        if not player.sports_team:
-                                                print(_("You joined a sports team."))
-                                                player.sports_team = True
-                                                player.change_skill("athletic", randint(1,3))
-                                                player.change_health(randint(1,4))
-                                        else:
-                                                print(_("You are already on a sports team."))
-                                elif idx == 3:
-                                        print(_("You attended a study group."))
-                                        player.change_grades(randint(2,4))
-                                        player.change_skill("academic",2)
-                                        player.change_skill("social",1)
-                                elif idx == 4:
-                                        if not player.student_council:
-                                                print(_("You joined the student council."))
-                                                player.student_council = True
-                                                player.change_skill("leadership",2)
-                                                player.change_happiness(randint(2,4))
-                                        else:
-                                                print(_("You are already on the student council."))
-                                elif idx == 5:
-                                        print(_("A bully confronts you. How do you respond?"))
-                                        bchoice = choice_input(_("Report to teacher"), _("Stand up"), _("Ignore"))
-                                        if bchoice == 1:
-                                                player.change_karma(randint(1,3))
-                                                player.change_happiness(-randint(1,3))
-                                        elif bchoice == 2:
-                                                if one_in(2):
-                                                        print(_("You stood up to the bully successfully."))
-                                                        player.change_happiness(randint(2,5))
-                                                else:
-                                                        print(_("The bully intimidated you."))
-                                                        player.change_happiness(-randint(2,5))
-                                        else:
-                                                player.change_happiness(-randint(1,3))
-                        elif stage == "high":
-                                if idx == 1:
-                                        print(_("You enrolled in advanced courses."))
-                                        player.change_grades(randint(1,4))
-                                        player.change_skill("academic",3)
-                                elif idx == 2:
-                                        if not player.student_council:
-                                                print(_("You took on an extracurricular leadership role."))
-                                                player.student_council = True
-                                                player.change_skill("leadership",3)
-                                                player.change_happiness(randint(2,5))
-                                        else:
-                                                print(_("You are already a student leader."))
-                                elif idx == 3:
-                                        print(_("You went to prom."))
-                                        player.change_happiness(randint(8,15))
-                                        player.change_skill("social",2)
-                                elif idx == 4:
-                                        if player.part_time_job:
-                                                print(_("You quit your part-time job to study more."))
-                                                player.part_time_job = False
-                                                player.change_grades(randint(3,5))
-                                        else:
-                                                print(_("You started a part-time job."))
-                                                player.part_time_job = True
-                                                player.change_grades(-randint(3,5))
-                                                player.money += randint(200, 400)
-                                elif idx == 5:
-                                        print(_("You took college prep tests."))
-                                        player.college_prep = clamp(player.college_prep + randint(5,10), 0, 100)
-                                        player.change_skill("academic",3)
-                                        player.change_grades(randint(1,3))
+	if choice == _("School"):
+		print(_("School Menu"))
+		print()
+		display_bar(_("Grades"), player.grades)
+		display_bar(_("Popularity"), player.popularity)
+		display_data(_("Friends"), player.friendships)
+		display_data(_("Rivals"), player.rivalries)
+		display_data(_("Romantic interests"), player.romantic_interests)
+		stage = player.get_school_stage()
+		base_options = [
+			_("Back"),
+			_("Study harder"),
+			_("Drop out"),
+			_("Skip school"),
+			_("Hang out"),
+			_("Study together"),
+			_("Gossip"),
+		]
+		if stage != "primary":
+			base_options.append(_("Attend party"))
+		if stage == "primary":
+			extra = [_("Join a club"), _("Start a project"), _("Ask a question in class"), _("Help a classmate"), _("Join a sports team")]
+		elif stage == "middle":
+			extra = [_("Choose elective"), _("Join sports team"), _("Study group"), _("Student council"), _("Deal with bullying")]
+		elif stage == "high":
+			extra = [_("Advanced course options"), _("Extracurricular leadership"), _("Prom"), _("Part-time job"), _("College prep tests")]
+		else:
+			extra = []
+		choice = choice_input(*(base_options + extra))
+		clear_screen()
+		if choice == 2:
+			print(_("You began studying harder"))
+			if not player.studied:
+				player.change_grades(randint(5, 7 + (100 - player.grades) // 5))
+				player.change_smarts(randint(0, 2) + (player.has_trait("NERD")))
+				if x_in_y(player.smarts, 2000):
+					player.learn_trait("NERD")
+				player.studied = True
+		elif choice == 3:
+			can_drop_out = player.smarts < randint(8, 12) + randint(0, 13)
+			can_drop_out &= not player.tried_to_drop_out
+			if (
+				player.age >= 18
+				or player.uv_years > 0
+				or (player.age >= randint(15, 16) and can_drop_out)
+			):
+				player.dropped_out = True
+				player.grades = None
+				print(_("You dropped out of school."))
+				if player.uv_years > 0:
+					player.uv_years = 0
+			else:
+				player.tried_to_drop_out = True
+				print(_("Your parents won't let you drop out of school."))
+		elif choice == 4:
+			place = random.choice(SPEND_TIME_PLACES)
+			display_event(_("You skipped school and went {place} instead.").format(place=place), cls=False)
+			player.change_smarts(-2)
+			player.change_grades(-randint(4, 8))
+			if player.uv_years == 0 and one_in(5):
+					display_event(_("You were caught skipping school!\nYou were sent to the principal's office and got detention."))
+					player.change_happiness(-randint(15, 25))
+					player.change_karma(-randint(1, 6))
+			elif not player.skipped_school:
+				player.change_happiness(randint(3, 7))
+				player.change_karma(-randint(1, 6))
+			player.skipped_school = True
+		elif choice == 5:
+			print(_("You hung out with friends."))
+			player.friendships += 1
+			player.change_popularity(randint(1, 3))
+			player.change_happiness(randint(2, 5))
+			player.change_stress(-randint(0, 3))
+		elif choice == 6:
+			print(_("You studied together with classmates."))
+			player.friendships += 1
+			player.change_grades(randint(1, 3))
+			player.change_skill("academic", 1)
+			player.change_popularity(randint(0, 2))
+			player.change_stress(-randint(0, 2))
+		elif choice == 7:
+			print(_("You gossiped about a classmate."))
+			player.change_popularity(randint(1, 4))
+			player.rivalries += 1
+			player.change_stress(randint(1, 4))
+			player.change_school_reputation(-randint(1, 3))
+		elif choice == 8 and _("Attend party") in base_options:
+			print(_("You attended a party."))
+			player.change_happiness(randint(4, 8))
+			player.change_popularity(randint(3, 6))
+			player.change_stress(randint(0, 5))
+			player.change_grades(-randint(1, 3))
+			if one_in(3):
+				player.romantic_interests += 1
+			for parent in player.parents.values():
+				parent.change_relationship(-randint(1, 4))
+		else:
+			idx = choice - len(base_options)
+			if stage == "primary":
+				if idx == 1:
+					if not player.club:
+						print(_("You joined a club."))
+						player.change_happiness(randint(5, 10))
+						player.change_skill("social", randint(1, 3))
+						player.club = True
+					else:
+						print(_("You are already in a club."))
+				elif idx == 2:
+					print(_("You started a new project."))
+					player.change_skill("academic", randint(1, 3))
+					player.change_grades(randint(1, 3))
+				elif idx == 3:
+					print(_("You asked a question in class."))
+					player.change_skill("academic", 1)
+					player.change_grades(randint(0, 2))
+				elif idx == 4:
+					print(_("You helped a classmate."))
+					player.change_happiness(randint(2,5))
+					player.change_karma(randint(1,3))
+					player.change_skill("social", 1)
+				elif idx == 5:
+					if not player.sports_team:
+						print(_("You joined a sports team."))
+						player.sports_team = True
+						player.change_skill("athletic", randint(1,3))
+						player.change_health(randint(1,4))
+					else:
+						print(_("You are already on a sports team."))
+			elif stage == "middle":
+				if idx == 1:
+					print(_("Which elective will you choose?"))
+					echoice = choice_input(_("Art"), _("Music"), _("Computer"), _("Foreign language"))
+					elective_map = {1:("social",2),2:("social",2),3:("academic",3),4:("academic",2)}
+					skill, amt = elective_map.get(echoice, ("academic",1))
+					player.change_skill(skill, amt)
+					player.change_happiness(randint(1,3))
+				elif idx == 2:
+					if not player.sports_team:
+						print(_("You joined a sports team."))
+						player.sports_team = True
+						player.change_skill("athletic", randint(1,3))
+						player.change_health(randint(1,4))
+					else:
+						print(_("You are already on a sports team."))
+				elif idx == 3:
+					print(_("You attended a study group."))
+					player.change_grades(randint(2,4))
+					player.change_skill("academic",2)
+					player.change_skill("social",1)
+				elif idx == 4:
+					if not player.student_council:
+						print(_("You joined the student council."))
+						player.student_council = True
+						player.change_skill("leadership",2)
+						player.change_happiness(randint(2,4))
+					else:
+						print(_("You are already on the student council."))
+				elif idx == 5:
+					print(_("A bully confronts you. How do you respond?"))
+					bchoice = choice_input(_("Report to teacher"), _("Stand up"), _("Ignore"))
+					if bchoice == 1:
+						player.change_karma(randint(1,3))
+						player.change_happiness(-randint(1,3))
+					elif bchoice == 2:
+						if one_in(2):
+							print(_("You stood up to the bully successfully."))
+							player.change_happiness(randint(2,5))
+						else:
+							print(_("The bully intimidated you."))
+							player.change_happiness(-randint(2,5))
+					else:
+						player.change_happiness(-randint(1,3))
+			elif stage == "high":
+				if idx == 1:
+					print(_("You enrolled in advanced courses."))
+					player.change_grades(randint(1,4))
+					player.change_skill("academic",3)
+				elif idx == 2:
+					if not player.student_council:
+						print(_("You took on an extracurricular leadership role."))
+						player.student_council = True
+						player.change_skill("leadership",3)
+						player.change_happiness(randint(2,5))
+					else:
+						print(_("You are already a student leader."))
+				elif idx == 3:
+					print(_("You went to prom."))
+					player.change_happiness(randint(8,15))
+					player.change_skill("social",2)
+				elif idx == 4:
+					if player.part_time_job:
+						print(_("You quit your part-time job to study more."))
+						player.part_time_job = False
+						player.change_grades(randint(3,5))
+					else:
+						print(_("You started a part-time job."))
+						player.part_time_job = True
+						player.change_grades(-randint(3,5))
+						player.money += randint(200, 400)
+				elif idx == 5:
+					print(_("You took college prep tests."))
+					player.college_prep = clamp(player.college_prep + randint(5,10), 0, 100)
+					player.change_skill("academic",3)
+					player.change_grades(randint(1,3))
 				
 	if choice == _("Debug Menu"):
 		choice = choice_input(_("Back"), _("Stats"), _("Identity"))
