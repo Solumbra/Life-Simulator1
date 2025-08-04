@@ -111,7 +111,10 @@ class Player(Person):
 		self.school_reputation = 50
 		self.college_prep = 0
 		self.club = False
+		# Track which club or sports team the player joined for more varied interactions
+		self.club_name = None
 		self.sports_team = False
+		self.sports_team_name = None
 		self.student_council = False
 		self.part_time_job = False
 		self.knowledge = 0
