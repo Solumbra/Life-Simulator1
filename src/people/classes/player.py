@@ -352,7 +352,9 @@ class Player(Person):
 	def save_game(self):
 		if not os.path.exists(self.save_path):
 			open(self.save_path, "x")
-		pickle.dump(self.__dict__, open(self.save_path, "wb"))
+		data = self.__dict__.copy()
+		data.pop("goals", None)
+		pickle.dump(data, open(self.save_path, "wb"))
 
 	def delete_save(self):
 		if os.path.exists(self.save_path):
