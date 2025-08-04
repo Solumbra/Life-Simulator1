@@ -19,6 +19,10 @@ def activities_menu(player):
                         choices.append(_("Music Time"))
                 if player.age >= 3:
                         choices.append(_("Arts and Crafts"))
+                if 3 <= player.age < 6:
+                        choices.append(_("Early socialization"))
+                        choices.append(_("Everyday learning"))
+                        choices.append(_("Curiosity and exploration"))
                 if player.age >= 4:
                         choices.append(_("Doctor"))
                         if player.age >= 18:
@@ -435,6 +439,46 @@ def activities_menu(player):
                                         if player.has_trait("NERD"):
                                                 player.change_smarts(randint(0, 2))
                         player.did_arts_and_crafts = True
+                elif choice == _("Early socialization"):
+                        selected = True
+                        sayings = [
+                                _("You met with other kids for a playdate and practiced sharing."),
+                                _("You joined a parent-child class at the library."),
+                                _("You visited a toddler gym and made new friends."),
+                                _("You played a collaborative game that taught patience and empathy."),
+                        ]
+                        print(random.choice(sayings))
+                        if not player.did_socialization:
+                                player.change_happiness(randint(2, 5))
+                                player.change_knowledge(randint(1, 2))
+                                player.did_socialization = True
+                elif choice == _("Everyday learning"):
+                        selected = True
+                        sayings = [
+                                _("You helped cook dinner and learned new words."),
+                                _("You watered the garden and talked about how plants grow."),
+                                _("You helped shop for groceries and named the colours of fruits."),
+                                _("You visited a museum and picked up new vocabulary."),
+                        ]
+                        print(random.choice(sayings))
+                        if not player.did_everyday_learning:
+                                player.change_smarts(randint(1, 2))
+                                player.change_knowledge(randint(2, 3))
+                                player.did_everyday_learning = True
+                elif choice == _("Curiosity and exploration"):
+                        selected = True
+                        sayings = [
+                                _("You sorted your toys by color and counted them."),
+                                _("You mixed different colours together to see what would happen."),
+                                _("You planted a seed and watched it begin to sprout."),
+                                _("You asked a big question and heard a simple answer."),
+                        ]
+                        print(random.choice(sayings))
+                        if not player.did_experiment:
+                                player.change_smarts(randint(1, 3))
+                                player.change_happiness(randint(2, 4))
+                                player.change_knowledge(randint(1, 3))
+                                player.did_experiment = True
                 elif choice == _("Listen to music"):
                         selected = True
                         music_categories = [_("pop music"), _("rock music"), _("hip-hop"), _("latin music")]
