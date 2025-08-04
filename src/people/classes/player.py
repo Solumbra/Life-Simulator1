@@ -91,6 +91,10 @@ class Player(Person):
 		self.salary_years = []
 		self.children = []
 		self.skills = {"academic": 0, "athletic": 0, "social": 0, "leadership": 0}
+		self.popularity = 50
+		self.friendships = 0
+		self.rivalries = 0
+		self.romantic_interests = 0
 		self.school_reputation = 50
 		self.college_prep = 0
 		self.club = False
@@ -402,6 +406,9 @@ class Player(Person):
 
 	def change_school_reputation(self, amount):
 		self.school_reputation = clamp(self.school_reputation + amount, 0, 100)
+
+	def change_popularity(self, amount):
+		self.popularity = clamp(self.popularity + amount, 0, 100)
 
 	def get_traits_str(self):
 		return ", ".join(
@@ -800,6 +807,7 @@ class Player(Person):
 			(_("Health"), self.health, "</3" if self.health < 20 else "<3"),
 			(_("Smarts"), self.smarts),
 			(_("Looks"), self.looks, looks_symbol),
+			(_("Popularity"), self.popularity),
 			show_percent=True,
 		)
 
