@@ -305,39 +305,50 @@ ALL_TRAITS = [Trait.from_name(n) for n in names]
 ALL_TRAITS_DICT = {names[i]: ALL_TRAITS[i] for i in range(len(names))}
 
 
-def int_input_range(lo, hi):
+def int_input_range(lo, hi, prompt="> ", on_invalid=None):
     while True:
         try:
-            val = int(input())
+            val = int(input(prompt))
         except ValueError:
             print(_("Invalid input; try again."))
+            if on_invalid:
+                on_invalid()
             continue
         if lo <= val <= hi:
             return val
         else:
             print(_("Invalid input; try again."))
+            if on_invalid:
+                on_invalid()
 
 
-def int_input_range_optional(lo, hi):
+def int_input_range_optional(lo, hi, prompt="> ", on_invalid=None):
     while True:
         try:
-            val = input()
-            if val is None:
+            val = input(prompt)
+            if val is None or val == "":
                 return None
             val = int(val)
         except ValueError:
             print(_("Invalid input; try again."))
+            if on_invalid:
+                on_invalid()
             continue
         if lo <= val <= hi:
             return val
         else:
             print(_("Invalid input; try again."))
+            if on_invalid:
+                on_invalid()
 
 
 def choice_input(*options, return_text=False):
-    for i in range(len(options)):
-        print(f"{i+1}. {options[i]}")
-    val = int_input_range(1, len(options))
+    def print_options():
+        for i in range(len(options)):
+            print(f"{i+1}. {options[i]}")
+
+    print_options()
+    val = int_input_range(1, len(options), on_invalid=print_options)
     if return_text:
         return options[val - 1]
     return val
