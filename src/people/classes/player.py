@@ -102,13 +102,16 @@ class Player(Person):
 			"academic": 0,
 			"social": 0,
 			"athletic": 0,
-			"leadership": 0,
-		}
+"leadership": 0,
+}
 		self.popularity = 50
 		self.friendships = 0
 		self.rivalries = 0
 		self.romantic_interests = 0
 		self.school_reputation = 50
+		self.career_aspiration = None
+		self.teacher_favor = 50
+		self.parent_approval = 50
 		self.college_prep = 0
 		self.club = False
 		# Track which club or sports team the player joined for more varied interactions
@@ -443,6 +446,12 @@ class Player(Person):
 	def change_popularity(self, amount):
 		self.popularity = clamp(self.popularity + amount, 0, 100)
 		self.check_school_achievements()
+
+	def change_teacher_favor(self, amount):
+		self.teacher_favor = clamp(self.teacher_favor + amount, 0, 100)
+
+	def change_parent_approval(self, amount):
+		self.parent_approval = clamp(self.parent_approval + amount, 0, 100)
 
 	def change_knowledge(self, amount):
 		prev = self.knowledge
