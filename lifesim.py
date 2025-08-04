@@ -15,7 +15,7 @@ def game_loop(player):
 				if type(e) == PlayerDied:
 					raise
 				clear_screen()
-				print(_("An error has occured"))
+                                print(_("An error has occurred"))
 				import traceback
 				message = "".join(traceback.format_exception(type(e), e, e.__traceback__))
 				print(message)
@@ -25,7 +25,7 @@ def game_loop(player):
 					print(_("The above error message has been written to error.log"))
 				except:
 					pass
-				print(_("Please report this bug on Github"))
+                                print(_("Please report this bug on GitHub"))
 				print("https://github.com/fungamer2-2/Life-Simulator1/issues/new?template=bug_report.md")
 				exit(1)
 			else:
@@ -51,5 +51,5 @@ while True:
 		elif yes_no(_("Would you like to start a new life?")):
 			break
 		else:
-			print(_("Thanks for playing!"))
-			exit()
+                        print(_("Thanks for playing!"))
+                        exit()

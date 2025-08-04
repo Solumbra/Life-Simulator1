@@ -16,7 +16,7 @@ msgstr ""
 
 
 #: lifesim.py:18
-msgid "An error has occured"
+msgid "An error has occurred"
 msgstr ""
 
 #: lifesim.py:25
@@ -24,7 +24,7 @@ msgid "The above error message has been written to error.log"
 msgstr ""
 
 #: lifesim.py:28
-msgid "Please report this bug on Github"
+msgid "Please report this bug on GitHub"
 msgstr ""
 
 #: lifesim.py:42 src/people/classes/player.py:608
