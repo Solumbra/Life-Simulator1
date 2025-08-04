@@ -20,6 +20,15 @@ SALARY_TAX_BRACKETS = [
 
 from src.lifesim_lib.translation import _
 
+# Basic job types available when searching for employment. Each entry is a
+# tuple of the form (title, minimum salary, average salary). The salary is
+# generated exponentially between the two numbers.
+JOB_TYPES = [
+    (_("Janitor"), 30000, 40000),
+    (_("Teacher"), 35000, 50000),
+    (_("Software Developer"), 60000, 90000),
+]
+
 ILLNESSES_TRANSLATIONS = {
     "Depression": _("Depression"),
     "High Blood Pressure": _("High Blood Pressure"),

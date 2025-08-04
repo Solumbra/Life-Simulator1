@@ -17,12 +17,13 @@ def main_menu(player):
 	display_data(_("Your name"), player.name)
 	t = player.get_traits_str() if player.traits else "None"
 	display_data(_("Traits"), t)
-	display_data(_("Gender"), player.get_gender_str())
-	display_data(_("Money"), f"${player.money:,}")
-	if player.salary > 0:
-		print(_("Salary") + f": ${player.salary:,}")
-	if player.generation > 1:
-		display_data(_("Generation"), player.generation)
+        display_data(_("Gender"), player.get_gender_str())
+        display_data(_("Money"), f"${player.money:,}")
+        if player.has_job:
+                display_data(_("Job Title"), player.job_title)
+                display_data(_("Salary"), f"${player.salary:,}")
+        if player.generation > 1:
+                display_data(_("Generation"), player.generation)
 	player.display_stats()
 	print()
 	choices = [_("Age +1"), _("Relationships"), _("Activities")]
@@ -634,45 +635,52 @@ def main_menu(player):
 						player.gender = Gender.Female
 					else:
 						player.gender = Gender.Male
-	if choice == _("Find a Job"):
-		salary = round_stochastic(
-			randexpo(30000, 65000)
-		)  # TODO: Add a selection of different types of jobs
-		if yes_no(
-			_(
-				"You found a job with a salary of ${salary:,}. Would you like to apply?"
-			).format(salary=salary)
-		):
-			m = 100 + round_stochastic((salary - 40000) / 300)
-			mod = (
-				50 - player.smarts
-			)  # Mod is inverted because we want to roll 100 OR LOWER to get the job
-			if randint(1, 3) == 1:
-				mod += round((50 - player.karma) / 2)
-			roll = randint(1, m)
-			if mod > 0:
-				roll += randint(0, mod)
-			elif mod < 0:
-				roll -= randint(0, abs(mod))
-			if roll <= 100:
-				print(_("You got the job!"))
-				player.change_happiness(4)
-				player.get_job(salary)
-			else:
-				print(_("You didn't get an interview."))
-				player.change_happiness(-randint(1, 4))
-		else:
-			clear_screen()
-	elif choice == _("Job Menu"):
-		print(_("Your job"))
-		print()
-		print_align_bars(
-			(_("Stress"), player.stress), (_("Performance"), player.performance)
-		)
-		display_data(_("Hours"), player.job_hours)
-		can_retire = player.years_worked >= 10 and player.age >= 65
-		choice = choice_input(
-			_("Back"),
+        if choice == _("Find a Job"):
+                offers = random.sample(JOB_TYPES, min(3, len(JOB_TYPES)))
+                jobs = []
+                options = [_("Back")]
+                for title, lo, avg in offers:
+                        salary = round_stochastic(randexpo(lo, avg))
+                        jobs.append((title, salary))
+                        options.append(f"{title} (${salary:,})")
+                job_choice = choice_input(*options)
+                if job_choice != 1:
+                        title, salary = jobs[job_choice - 2]
+                        if yes_no(
+                                _(
+                                        "You found a job as a {title} with a salary of ${salary:,}. Would you like to apply?"
+                                ).format(title=title, salary=salary)
+                        ):
+                                m = 100 + round_stochastic((salary - 40000) / 300)
+                                mod = 50 - player.smarts
+                                if randint(1, 3) == 1:
+                                        mod += round((50 - player.karma) / 2)
+                                roll = randint(1, m)
+                                if mod > 0:
+                                        roll += randint(0, mod)
+                                elif mod < 0:
+                                        roll -= randint(0, abs(mod))
+                                if roll <= 100:
+                                        print(_("You got the job!"))
+                                        player.change_happiness(4)
+                                        player.get_job(salary, title)
+                                else:
+                                        print(_("You didn't get an interview."))
+                                        player.change_happiness(-randint(1, 4))
+                        else:
+                                clear_screen()
+        elif choice == _("Job Menu"):
+                print(_("Your job"))
+                print()
+                display_data(_("Job Title"), player.job_title)
+                display_data(_("Salary"), f"${player.salary:,}")
+                print_align_bars(
+                        (_("Stress"), player.stress), (_("Performance"), player.performance)
+                )
+                display_data(_("Hours"), player.job_hours)
+                can_retire = player.years_worked >= 10 and player.age >= 65
+                choice = choice_input(
+                        _("Back"),
 			_("Work Harder"),
 			_("Retire") if can_retire else _("Quit Job"),
 			_("Adjust Hours"),
