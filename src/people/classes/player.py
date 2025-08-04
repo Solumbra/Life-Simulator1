@@ -839,9 +839,29 @@ class Player(Person):
 			factor = random.uniform(0.4, 0.8)
 		income *= factor
 		return round_stochastic(income)
+	def get_difficulty(self):
+		"""Return a difficulty modifier based on the player's age.
+
+		The modifier follows a gentle logistic growth curve so that
+		difficulty ramps up steadily without sudden spikes. Young
+		players start close to 1.0 and it approaches 3.0 in later
+		life, ensuring a balanced experience.
+		"""
+		return 1 + 2 / (1 + math.exp(-(self.age - 40) / 20))
+
+	def get_event_chance(self, base):
+		"""Scale a base ``one_in`` chance using the current difficulty.
+
+		A higher difficulty lowers the returned denominator which in
+		turn increases the frequency of the event associated with the
+		chance. The value is clamped to at least 1 to avoid division
+		by zero or negative probabilities.
+		"""
+		return max(1, round(base / self.get_difficulty()))
+
 
 	def random_events(self):
-		if self.age >= 5 and one_in(5000):
+		if self.age >= 5 and one_in(self.get_event_chance(5000)):
 			print(_("You were struck by lightning!"))
 			good_or_bad = one_in(2)
 			if good_or_bad:
@@ -914,13 +934,13 @@ class Player(Person):
 					self.die(_("You died due to complications associated with cancer."))
 			elif illness in ["Common Cold", "Flu"]:
 				self.remove_illness(illness)
-		if self.age >= 4 and one_in(2000):
+		if self.age >= 4 and one_in(self.get_event_chance(2000)):
 			display_event(_("You have been diagnosed with cancer."))
 			self.add_illness(TranslateMarker("Cancer"))
 			self.change_health(-randint(16, 50))
 			self.change_happiness(-randint(30, 50))
-		elif one_in(20):
-			if self.age >= 3 and one_in(6):
+		elif one_in(self.get_event_chance(20)):
+			if self.age >= 3 and one_in(self.get_event_chance(6)):
 				display_event(_("You are suffering from the flu."))
 				self.add_illness(TranslateMarker("Flu"))
 				self.change_health(-randint(2, 5))
@@ -1030,7 +1050,7 @@ class Player(Person):
 					)
 					self.lose_partner()
 		elif self.marital_status == 3:
-			if self.partner.relationship <= randint(15, 30) and one_in(6):
+			if self.partner.relationship <= randint(15, 30) and one_in(self.get_event_chance(6)):
 				name = self.partner.name_accusative()
 				print(_("Your {partner} wants a divorce.").format(partner=name))
 				print(_("What will you do?"))
@@ -1094,7 +1114,7 @@ class Player(Person):
 			)
 			success = False
 			if choice == 1:
-				success = not one_in(6)
+				success = not one_in(self.get_event_chance(6))
 				self.money -= ransom
 				if success:
 					display_event(_("You successfully paid ${ransom} ransom in exchange for {name}'s release.").format(ransom=ransom, name=self.partner.firstname), cls=False)
