@@ -581,14 +581,15 @@ def activities_menu(player):
 			if choice == _("Meditate"):
 				print(_("You practiced meditation."))
 				if not player.meditated:  # You can only get the bonus once per year
-					player.change_health(randint(2, 4))
-					player.change_happiness(randint(3, 5))
-					player.change_karma(randint(1, 3))
-					player.change_stress(-randint(3, 8))
-					if player.has_trait("MEDITATOR"):
-						player.change_stress(-4)
-						player.change_happiness(2)
-						player.change_health(randint(1, 2))
+				        player.change_health(randint(2, 4))
+				        player.change_happiness(randint(3, 5))
+				        player.change_karma(randint(1, 3))
+				        player.change_stress(-randint(3, 8))
+				        player.change_energy(randint(5,10))
+				        if player.has_trait("MEDITATOR"):
+				                player.change_stress(-4)
+				                player.change_happiness(2)
+				                player.change_health(randint(1, 2))
 					if player.times_meditated == 0 or one_in(20):  
 						# Your first meditation is guaranteed to cause a deeper awareness
 						player.change_happiness(2)
@@ -603,22 +604,23 @@ def activities_menu(player):
 					player.times_meditated += 1
 			elif choice == _("Gym"):
 				if player.health < 10:
-					print(_("Your health is too weak to visit the gym."))
+				        print(_("Your health is too weak to visit the gym."))
 				else:
-					enjoyment = randint(35, 80)
-					if randint(1, 3) == 1:
-						enjoyment += randint(10, 20)
-					print(_("You worked out at the gym."))
-					display_bar(_("Your Enjoyment"), enjoyment)
-					if not player.worked_out:
-						player.change_happiness(round_stochastic(enjoyment / 12))
-						if player.has_trait("CHEERFUL"):
-							player.change_happiness(3)
-						player.change_health(randint(3, 6))
-						if player.looks < randint(1, 100):
-							player.change_looks(randint(2, 4))
-						player.worked_out = True
-					print()
+				        enjoyment = randint(35, 80)
+				        if randint(1, 3) == 1:
+				                enjoyment += randint(10, 20)
+				        print(_("You worked out at the gym."))
+				        display_bar(_("Your Enjoyment"), enjoyment)
+				        if not player.worked_out:
+				                player.change_happiness(round_stochastic(enjoyment / 12))
+				                if player.has_trait("CHEERFUL"):
+				                        player.change_happiness(3)
+				                player.change_health(randint(3, 6))
+				                if player.looks < randint(1, 100):
+				                        player.change_looks(randint(2, 4))
+				                player.worked_out = True
+				                player.change_energy(-randint(6,12))
+				        print()
 			elif choice == _("Library"):
 				print(_("You went to the library."))
 				enjoyment = randint(15, 65)
@@ -634,26 +636,27 @@ def activities_menu(player):
 					enjoyment = max(enjoyment, randint(35, 100))	
 				display_bar(_("Your Enjoyment"), enjoyment)
 				if not player.visited_library:  # You can only get the bonus once per year
-					happy_gain = enjoyment / 15
-					if player.has_trait("BOOK_LOVER"):
-						happy_gain *= 1.5
-						happy_gain += 2
-					player.change_happiness(round_stochastic(happy_gain))
-					if player.has_trait("CHEERFUL"):
-						player.change_happiness(3)
-					player.change_smarts(randint(2, 5))
-					if player.has_trait("GENIUS"):
-						player.change_smarts(5)
-					elif player.has_trait("NERD"):
-						player.change_smarts(3)
-					player.times_visited_library += 1
-					if one_in(48) and random.random() < 0.95**player.times_visited_library:
-						can_learn_nerd = not player.has_trait("NERD")
-						if can_learn_nerd and x_in_y(player.smarts, 200):
-							player.learn_trait("NERD")
-						else:
-							player.learn_trait("BOOK_LOVER")
-					player.visited_library = True
+				        happy_gain = enjoyment / 15
+				        if player.has_trait("BOOK_LOVER"):
+				                happy_gain *= 1.5
+				                happy_gain += 2
+				        player.change_happiness(round_stochastic(happy_gain))
+				        if player.has_trait("CHEERFUL"):
+				                player.change_happiness(3)
+				        player.change_smarts(randint(2, 5))
+				        if player.has_trait("GENIUS"):
+				                player.change_smarts(5)
+				        elif player.has_trait("NERD"):
+				                player.change_smarts(3)
+				        player.times_visited_library += 1
+				        if one_in(48) and random.random() < 0.95**player.times_visited_library:
+				                can_learn_nerd = not player.has_trait("NERD")
+				                if can_learn_nerd and x_in_y(player.smarts, 200):
+				                        player.learn_trait("NERD")
+				                else:
+				                        player.learn_trait("BOOK_LOVER")
+				        player.visited_library = True
+				        player.change_energy(-randint(2,5))
 			elif choice == _("Read a Book"):
 				#print(_("Coming soon!"))
 				done = False
@@ -708,17 +711,18 @@ def activities_menu(player):
 									press_enter()
 									h_amount = math.ceil(random.uniform(0.8, 1) * happy_amount * (1 - player.happiness/100))
 									s_amount = math.ceil(random.uniform(0.8, 1) * smarts_amount * (1 - player.smarts/100))
-									if player.has_trait("CHEERFUL"):
-										h_amount += max(4, h_amount//3)
-									player.change_happiness(h_amount)
-									player.change_smarts(s_amount)
-									if happy_amount > 0:
-										amount = random.uniform(0, math.sqrt(happy_amount)) * (min(player.stress / 70, 1))**2
-										player.change_stress(-round_stochastic(amount))
-							else:
-								reading = False
-								if choice == 2:
-									done = True
+				                                        if player.has_trait("CHEERFUL"):
+				                                                h_amount += max(4, h_amount//3)
+				                                        player.change_happiness(h_amount)
+				                                        player.change_smarts(s_amount)
+				                                        if happy_amount > 0:
+				                                                amount = random.uniform(0, math.sqrt(happy_amount)) * (min(player.stress / 70, 1))**2
+				                                                player.change_stress(-round_stochastic(amount))
+				                                        player.change_energy(-randint(1,4))
+				                        else:
+				                                reading = False
+				                                if choice == 2:
+				                                        done = True
 					else:
 						done = True
 		elif choice == _("Plastic Surgery"):

@@ -90,7 +90,20 @@ class Player(Person):
 		self.illnesses = []
 		self.salary_years = []
 		self.children = []
-		self.skills = {"academic": 0, "athletic": 0, "social": 0, "leadership": 0}
+		self.skills = {
+			"math": 0,
+			"language": 0,
+			"science": 0,
+			"charisma": 0,
+			"empathy": 0,
+			"stamina": 0,
+			"strength": 0,
+			"creativity": 0,
+			"academic": 0,
+			"social": 0,
+			"athletic": 0,
+			"leadership": 0,
+		}
 		self.popularity = 50
 		self.friendships = 0
 		self.rivalries = 0
@@ -101,6 +114,13 @@ class Player(Person):
 		self.sports_team = False
 		self.student_council = False
 		self.part_time_job = False
+		self.knowledge = 0
+		self.attendance_years = 0
+		self.achievements = set()
+		self.energy = 100
+		self.scholarship = False
+		self.better_job = False
+		self.special_event = False
 		self.ID = str(uuid.uuid4())
 		self.fertility = 0
 		if self.gender == Gender.Female:
@@ -386,9 +406,18 @@ class Player(Person):
 		return "high"
 
 	def change_skill(self, skill, amount):
+		skill_map = {
+			"academic": ["math", "language", "science"],
+			"social": ["charisma", "empathy"],
+			"athletic": ["stamina", "strength"],
+			"leadership": ["charisma", "creativity"],
+		}
+		targets = skill_map.get(skill, [])
 		if skill in self.skills:
 			self.skills[skill] = clamp(self.skills[skill] + amount, 0, 100)
-
+		for s in targets:
+			if s in self.skills:
+				self.skills[s] = clamp(self.skills[s] + amount, 0, 100)
 	def add_illness(self, illness):
 		if illness not in self.illnesses:
 			self.illnesses.append(illness)
@@ -400,6 +429,7 @@ class Player(Person):
 	def change_grades(self, amount):
 		if self.is_in_school():
 			self.grades = clamp(self.grades + amount, 0, 100)
+			self.check_school_achievements()
 
 	def change_karma(self, amount):
 		self.karma = clamp(self.karma + amount, 0, 100)
@@ -409,6 +439,34 @@ class Player(Person):
 
 	def change_popularity(self, amount):
 		self.popularity = clamp(self.popularity + amount, 0, 100)
+		self.check_school_achievements()
+
+	def change_knowledge(self, amount):
+		prev = self.knowledge
+		self.knowledge = clamp(self.knowledge + amount, 0, 100)
+		for m in (25, 50, 75, 100):
+			if prev < m <= self.knowledge:
+			        print(_("You reached a knowledge milestone of {m}!" ).format(m=m))
+
+	def change_energy(self, amount):
+		self.energy = clamp(self.energy + amount, 0, 100)
+
+	def check_school_achievements(self):
+		if self.attendance_years >= 5 and "Perfect Attendance" not in self.achievements:
+			self.achievements.add("Perfect Attendance")
+			self.special_event = True
+			print(_("Achievement unlocked: Perfect Attendance"))
+			print(_("You have been invited to a special school event!"))
+		if self.grades is not None and self.grades >= 90 and "Honor Student" not in self.achievements:
+			self.achievements.add("Honor Student")
+			self.scholarship = True
+			print(_("Achievement unlocked: Honor Student"))
+			print(_("Scholarship opportunities are now available."))
+		if self.popularity >= 90 and "School Celebrity" not in self.achievements:
+			self.achievements.add("School Celebrity")
+			self.better_job = True
+			print(_("Achievement unlocked: School Celebrity"))
+			print(_("Better part-time job opportunities unlocked."))
 
 	def get_traits_str(self):
 		return ", ".join(
@@ -434,6 +492,7 @@ class Player(Person):
 			w /= 3
 		self.witch_doctor_health = w
 		self.date_options = randint(9, 11)
+		self.energy = 100
 		
 	def process_relation_death(self, relation, reason=None):
 		if relation not in self.relations:
@@ -513,6 +572,10 @@ class Player(Person):
 		if self.has_trait("LAZY"):
 			self.change_performance(-randint(0, 5))
 			self.change_stress(-randint(0, 4))
+		if self.is_in_school():
+			if not self.skipped_school:
+			        self.attendance_years += 1
+			self.check_school_achievements()
 		self.reset_already_did()
 		self.change_karma(randint(-2, 2))
 		for i in range(2):
@@ -808,6 +871,8 @@ class Player(Person):
 			(_("Smarts"), self.smarts),
 			(_("Looks"), self.looks, looks_symbol),
 			(_("Popularity"), self.popularity),
+			(_("Energy"), self.energy),
+			(_("Stress"), self.stress),
 			show_percent=True,
 		)
 
@@ -1330,11 +1395,14 @@ class Player(Person):
 			self.change_happiness(randint(15, 20))
 			self.change_smarts(randint(6, 10))
 			if self.student_council:
-				print(_("Your student council service stands out on applications."))
-				self.change_skill("leadership", randint(1, 3))
+			        print(_("Your student council service stands out on applications."))
+			        self.change_skill("leadership", randint(1, 3))
 			if self.college_prep >= 50:
-				print(_("Your college prep scores earned you scholarship offers."))
-				self.money += randint(500, 2000)
+			        print(_("Your college prep scores earned you scholarship offers."))
+			        self.money += randint(500, 2000)
+			if self.scholarship:
+			        print(_("Your achievements granted you a special scholarship."))
+			        self.money += randint(1000, 3000)
 			print()
 			self.display_stats()
 			print()
